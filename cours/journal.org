@@ -30,3 +30,16 @@
   On lit les notes jusqu'à la page 31.
 * Cours 5 <2022-10-25>
   On lit les notes jusqu'à la page 38.
+* Cours 6 <2022-11-08>
+  On discute du projet. Le code et le sujet peuvent être trouvés dans le
+  répertoire [[file:../projet/][projet]].
+
+  Pour réaliser le projet, il faut un compte sur Gaufre, le serveur GitLab de
+  l'UFR d'informatique.
+
+  https://gaufre.informatique.univ-paris-diderot.fr/
+
+  Si vous avez déjà un compte à l'UFR d'informatique, celui-ci permet de vous
+  connecter à Gaufre. C'est notamment le cas de tous les étudiants de M2. Pour
+  les étudiants de l'EIDD, je suis en train de faire le nécessaire ; je vous
+  tiens au courant d'ici à la semaine prochaine.

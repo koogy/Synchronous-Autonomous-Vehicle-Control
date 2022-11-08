@@ -133,7 +133,6 @@ let
   sonar = fold<<obstnum>> obstacles_detection_aux(ph^obstnum,
                                                   obstacles,
                                                   cSONARFAR);
-  () = Trace.trace_int("sonar", sonar);
 tel
 
 node robot_sensors(ph : phase; sign : sign) returns (sens : sensors)
