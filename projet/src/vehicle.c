@@ -1,6 +1,6 @@
-/* --- Generated the 17/11/2022 at 18:35 --- */
-/* --- heptagon compiler, version 1.05.00 (compiled thu. sep. 29 16:55:19 CET 2022) --- */
-/* --- Command line: /home/alex/.opam/4.11.1/bin/heptc -c -target c vehicle.ept --- */
+/* --- Generated the 18/11/2022 at 0:14 --- */
+/* --- heptagon compiler, version 1.05.00 (compiled wed. oct. 5 14:31:43 CET 2022) --- */
+/* --- Command line: /home/alex/.opam/default/bin/heptc -c -target c vehicle.ept --- */
 
 #include <stdio.h>
 #include <string.h>
@@ -59,7 +59,6 @@ void Vehicle__car_geometry_step(Globals__phase phase, float vec[2],
 }
 
 void Vehicle__driver_reset(Vehicle__driver_mem* self) {
-  Control__controller_reset(&self->controller);
   self->pnr = false;
   self->ck = Vehicle__St_Preparing;
 }
@@ -73,7 +72,6 @@ void Vehicle__driver_step(int top, Globals__sensors sens,
   int v_5;
   Vehicle__st v_4;
   int v;
-  int r_1;
   int arriving;
   int nr_St_Stopped;
   Vehicle__st ns_St_Stopped;
@@ -94,8 +92,37 @@ void Vehicle__driver_step(int top, Globals__sensors sens,
   Vehicle__st ns;
   int r;
   int nr;
-  r = self->pnr;
   switch (self->ck) {
+    case Vehicle__St_Running:
+      Control__controller_step(sens, iti, &Control__controller_out_st);
+      rspeed_St_Running = Control__controller_out_st.rspeed;
+      arriving = Control__controller_out_st.arriving;
+      sta_St_Running = Globals__Running;
+      v = (itr==Globals__Halt);
+      if (v) {
+        v_5 = true;
+      } else {
+        v_5 = false;
+      };
+      if (arriving) {
+        nr_St_Running = true;
+      } else {
+        nr_St_Running = v_5;
+      };
+      if (v) {
+        v_4 = Vehicle__St_Stopped;
+      } else {
+        v_4 = Vehicle__St_Running;
+      };
+      if (arriving) {
+        ns_St_Running = Vehicle__St_Arrived;
+      } else {
+        ns_St_Running = v_4;
+      };
+      _out->sta = sta_St_Running;
+      ns = ns_St_Running;
+      nr = nr_St_Running;
+      break;
     case Vehicle__St_Preparing:
       sta_St_Preparing = Globals__Preparing;
       if (top) {
@@ -108,39 +135,6 @@ void Vehicle__driver_step(int top, Globals__sensors sens,
       _out->sta = sta_St_Preparing;
       ns = ns_St_Preparing;
       nr = nr_St_Preparing;
-      rspeed_St_Preparing.right = 0.000000;
-      rspeed_St_Preparing.left = 0.000000;
-      _out->rspeed = rspeed_St_Preparing;
-      break;
-    case Vehicle__St_Running:
-      sta_St_Running = Globals__Running;
-      v = (itr==Globals__Halt);
-      if (v) {
-        v_5 = true;
-        v_4 = Vehicle__St_Stopped;
-      } else {
-        v_5 = false;
-        v_4 = Vehicle__St_Running;
-      };
-      r_1 = r;
-      if (r_1) {
-        Control__controller_reset(&self->controller);
-      };
-      Control__controller_step(sens, iti, &Control__controller_out_st,
-                               &self->controller);
-      rspeed_St_Running = Control__controller_out_st.rspeed;
-      arriving = Control__controller_out_st.arriving;
-      if (arriving) {
-        nr_St_Running = true;
-        ns_St_Running = Vehicle__St_Arrived;
-      } else {
-        nr_St_Running = v_5;
-        ns_St_Running = v_4;
-      };
-      _out->sta = sta_St_Running;
-      ns = ns_St_Running;
-      nr = nr_St_Running;
-      _out->rspeed = rspeed_St_Running;
       break;
     case Vehicle__St_Arrived:
       sta_St_Arrived = Globals__Arrived;
@@ -149,9 +143,6 @@ void Vehicle__driver_step(int top, Globals__sensors sens,
       _out->sta = sta_St_Arrived;
       ns = ns_St_Arrived;
       nr = nr_St_Arrived;
-      rspeed_St_Arrived.right = 0.000000;
-      rspeed_St_Arrived.left = 0.000000;
-      _out->rspeed = rspeed_St_Arrived;
       break;
     case Vehicle__St_Stopped:
       sta_St_Stopped = Globals__Stopped;
@@ -160,9 +151,29 @@ void Vehicle__driver_step(int top, Globals__sensors sens,
       _out->sta = sta_St_Stopped;
       ns = ns_St_Stopped;
       nr = nr_St_Stopped;
+      break;
+    default:
+      break;
+  };
+  r = self->pnr;
+  switch (self->ck) {
+    case Vehicle__St_Preparing:
+      rspeed_St_Preparing.right = 0.000000;
+      rspeed_St_Preparing.left = 0.000000;
+      _out->rspeed = rspeed_St_Preparing;
+      break;
+    case Vehicle__St_Arrived:
+      rspeed_St_Arrived.right = 0.000000;
+      rspeed_St_Arrived.left = 0.000000;
+      _out->rspeed = rspeed_St_Arrived;
+      break;
+    case Vehicle__St_Stopped:
       rspeed_St_Stopped.right = 0.000000;
       rspeed_St_Stopped.left = 0.000000;
       _out->rspeed = rspeed_St_Stopped;
+      break;
+    case Vehicle__St_Running:
+      _out->rspeed = rspeed_St_Running;
       break;
     default:
       break;
@@ -208,9 +219,9 @@ void Vehicle__physical_model_step(int top, Globals__wheels rspeed,
   float v_8;
   float v_7;
   float v_6;
-  int r_4;
   int r_3;
   int r_2;
+  int r_1;
   float si;
   float co;
   float alpha;
@@ -285,11 +296,11 @@ void Vehicle__physical_model_step(int top, Globals__wheels rspeed,
       v = (v_12/2.000000);
       nr_St_1_On = false;
       ns_St_1_On = Vehicle__St_1_On;
+      r_1 = r;
       r_2 = r;
       r_3 = r;
-      r_4 = r;
       alpha0 = alpha0_St_1_On;
-      if (r_2) {
+      if (r_1) {
         Utilities__integrator_reset(&self->integrator);
       };
       Utilities__integrator_step(v_15, Globals__timestep, alpha0,
@@ -311,7 +322,7 @@ void Vehicle__physical_model_step(int top, Globals__wheels rspeed,
       ns = ns_St_1_On;
       nr = nr_St_1_On;
       x0 = x0_St_1_On;
-      if (r_3) {
+      if (r_2) {
         Utilities__integrator_reset(&self->integrator_1);
       };
       Utilities__integrator_step(v_17, Globals__timestep, x0,
@@ -319,7 +330,7 @@ void Vehicle__physical_model_step(int top, Globals__wheels rspeed,
                                  &self->integrator_1);
       v_18 = Utilities__integrator_out_st.o;
       y0 = y0_St_1_On;
-      if (r_4) {
+      if (r_3) {
         Utilities__integrator_reset(&self->integrator_2);
       };
       Utilities__integrator_step(v_19, Globals__timestep, y0,

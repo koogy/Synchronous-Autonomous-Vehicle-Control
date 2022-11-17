@@ -6,11 +6,8 @@ open Utilities
  *)
 
 fun power2(value1 : int) returns (v : int)
-(* var w0, w1 : Debug.world; *)
 let 
   v = value1*value1;
-(*   w0 = Debug.d_string(Debug.d_init(), "[TEST] \n");
-  w1 = Debug.d_int(w0, v); *)
 tel 
 
 fun compare_colors(color1,color2 : color) returns (v : float)
@@ -38,9 +35,6 @@ let
               else if (min = middle) then 0
               else if (min = right) then -1
               else 0;
-
-  
-
 tel 
 
 fun adjustSpeed(speed: float) returns (s:float)
@@ -49,38 +43,43 @@ let
 tel 
 
 fun setMotorSpeed(leftSpeed,rightSpeed : float ) returns (ls,rs : float)  
-(* var w0, w1,w2: Debug.world;  *)
 let
-	  ls = if adjustSpeed(leftSpeed) <. 0.0 then (-.adjustSpeed(leftSpeed)) else adjustSpeed(leftSpeed);
-		rs = if adjustSpeed(rightSpeed)<. 0.0 then (-.adjustSpeed(rightSpeed)) else adjustSpeed(rightSpeed);
-    
-   (*  w0 = Debug.d_string(Debug.d_init(), "[TEST] \n");
-    w1 = Debug.d_float(w0, ls);
-    w2 = Debug.d_float(w0, rs); *)
+	  ls = if adjustSpeed(leftSpeed) <. 0.0 then (-.1.0) *. ((leftSpeed)) else (leftSpeed);
+		rs = if adjustSpeed(rightSpeed)<. 0.0 then (-.1.0) *.((rightSpeed)) else (rightSpeed);
 tel 
 
 
 node controller(sens : sensors; iti : itielts)
        returns (rspeed : wheels; arriving : bool)
 
-var w0,w2 : Debug.world; left,mid,right,leftSpeed,rightSpeed,error, kp,tp, turn: float;
+var (* w0,w1,w2,w3,w4,w5,w6 : Debug.world;  *)left,mid,right,leftSpeed,rightSpeed,error, kp,tp, turn: float;
 
 
 let
-  kp = 14.0;
+  kp = 0.3;
   tp = 300.0;
-  () = Trace.trace_int("Direction",getDirection(sens));
   (left,mid,right) = (getDistances(sens));
   error =  mid *. Mathext.float(getDirection(sens));
   turn = (kp *. error);
-  () = Trace.trace_float("turn",turn);
-  () = Trace.trace_float("error",error);
+
   (leftSpeed,rightSpeed) = setMotorSpeed(tp +.turn, tp -. turn);
-  () = Trace.trace_float("leftSpeed",leftSpeed);
-  () = Trace.trace_float("rightSpeed",rightSpeed);
-  w0 = Debug.d_string(Debug.d_init(), "[TEST] \n");
-  w2 = Debug.d_int(w0, getDirection(sens));
+(*   w0 = Debug.d_string(Debug.d_init(), "[TEST] \n");
+  w1 = Debug.d_int(w0, getDirection(sens));
+  w2 = Debug.d_string(w1, "\n");
+
+  w3 = Debug.d_float(w2, leftSpeed);
+  w4 = Debug.d_string(w3, "\n");
+
+  w5 = Debug.d_float(w4, rightSpeed);
+  w6 = Debug.d_string(w5, "\n"); *)
   rspeed = { left = (leftSpeed); right = (rightSpeed) };
   arriving = false;
 
 tel
+
+
+(*   () = Trace.trace_int("Direction",getDirection(sens));
+  () = Trace.trace_float("turn",turn);
+  () = Trace.trace_float("error",error);
+  () = Trace.trace_float("leftSpeed",leftSpeed);
+  () = Trace.trace_float("rightSpeed",rightSpeed); *)

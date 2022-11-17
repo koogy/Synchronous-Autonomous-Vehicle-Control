@@ -1,15 +1,13 @@
-/* --- Generated the 17/11/2022 at 18:35 --- */
-/* --- heptagon compiler, version 1.05.00 (compiled thu. sep. 29 16:55:19 CET 2022) --- */
-/* --- Command line: /home/alex/.opam/4.11.1/bin/heptc -c -target c control.ept --- */
+/* --- Generated the 18/11/2022 at 0:14 --- */
+/* --- heptagon compiler, version 1.05.00 (compiled wed. oct. 5 14:31:43 CET 2022) --- */
+/* --- Command line: /home/alex/.opam/default/bin/heptc -c -target c control.ept --- */
 
 #ifndef CONTROL_H
 #define CONTROL_H
 
 #include "control_types.h"
-#include "debug.h"
 #include "globals.h"
 #include "mathext.h"
-#include "trace.h"
 #include "utilities.h"
 typedef struct Control__power2_out {
   int v;
@@ -55,23 +53,12 @@ typedef struct Control__setMotorSpeed_out {
 void Control__setMotorSpeed_step(float leftSpeed, float rightSpeed,
                                  Control__setMotorSpeed_out* _out);
 
-typedef struct Control__controller_mem {
-  Trace__trace_float_mem trace_float;
-  Trace__trace_float_mem trace_float_2;
-  Trace__trace_float_mem trace_float_3;
-  Trace__trace_int_mem trace_int;
-  Trace__trace_float_mem trace_float_1;
-} Control__controller_mem;
-
 typedef struct Control__controller_out {
   Globals__wheels rspeed;
   int arriving;
 } Control__controller_out;
 
-void Control__controller_reset(Control__controller_mem* self);
-
 void Control__controller_step(Globals__sensors sens, Globals__itielts iti,
-                              Control__controller_out* _out,
-                              Control__controller_mem* self);
+                              Control__controller_out* _out);
 
 #endif // CONTROL_H
