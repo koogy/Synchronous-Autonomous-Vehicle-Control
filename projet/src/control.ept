@@ -1,9 +1,86 @@
 open Globals
+open Utilities
+(*cyan left
+  blue middle
+  magenta right 
+ *)
+
+fun power2(value1 : int) returns (v : int)
+(* var w0, w1 : Debug.world; *)
+let 
+  v = value1*value1;
+(*   w0 = Debug.d_string(Debug.d_init(), "[TEST] \n");
+  w1 = Debug.d_int(w0, v); *)
+tel 
+
+fun compare_colors(color1,color2 : color) returns (v : float)
+let
+  v = Mathext.sqrt(Mathext.float(power2(color1.red - color2.red)) +. Mathext.float(power2(color1.green - color2.green)) +. Mathext.float(power2(color1.blue - color2.blue)))
+tel
+
+
+fun getDistances(sens : sensors) returns ( left, middle, right: float)
+var mid : color;
+let
+
+  mid = {red = Mathext.int((Mathext.float(cyan.red) *. 0.5) +. (Mathext.float(blue.red) *. 0.5)) ; green = Mathext.int((Mathext.float(cyan.green) *. 0.5) +. (Mathext.float(blue.green) *. 0.5))  ; blue = Mathext.int((Mathext.float(cyan.blue) *. 0.5) +. (Mathext.float(blue.blue) *. 0.5)) };
+  left = compare_colors(sens.s_road, cyan) ;
+  middle = compare_colors(sens.s_road, blue);
+  right = compare_colors(sens.s_road, magenta)
+tel
+
+fun getDirection(sens :sensors) returns ( direction : int)
+var min, left,middle, right : float;
+let
+  (left,middle,right) = getDistances(sens);
+  min = min_float(min_float(left,middle),right);
+  direction = if (min = left) then 1
+              else if (min = middle) then 0
+              else if (min = right) then -1
+              else 0;
+
+  
+
+tel 
+
+fun adjustSpeed(speed: float) returns (s:float)
+let
+  s= max_float(min_float(speed, 300.0), -.300.0);
+tel 
+
+fun setMotorSpeed(leftSpeed,rightSpeed : float ) returns (ls,rs : float)  
+(* var w0, w1,w2: Debug.world;  *)
+let
+	  ls = if adjustSpeed(leftSpeed) <. 0.0 then (-.adjustSpeed(leftSpeed)) else adjustSpeed(leftSpeed);
+		rs = if adjustSpeed(rightSpeed)<. 0.0 then (-.adjustSpeed(rightSpeed)) else adjustSpeed(rightSpeed);
+    
+   (*  w0 = Debug.d_string(Debug.d_init(), "[TEST] \n");
+    w1 = Debug.d_float(w0, ls);
+    w2 = Debug.d_float(w0, rs); *)
+tel 
 
 
 node controller(sens : sensors; iti : itielts)
        returns (rspeed : wheels; arriving : bool)
+
+var w0,w2 : Debug.world; left,mid,right,leftSpeed,rightSpeed,error, kp,tp, turn: float;
+
+
 let
-  rspeed = { left = 0.0; right = 0.0 };
+  kp = 14.0;
+  tp = 300.0;
+  () = Trace.trace_int("Direction",getDirection(sens));
+  (left,mid,right) = (getDistances(sens));
+  error =  mid *. Mathext.float(getDirection(sens));
+  turn = (kp *. error);
+  () = Trace.trace_float("turn",turn);
+  () = Trace.trace_float("error",error);
+  (leftSpeed,rightSpeed) = setMotorSpeed(tp +.turn, tp -. turn);
+  () = Trace.trace_float("leftSpeed",leftSpeed);
+  () = Trace.trace_float("rightSpeed",rightSpeed);
+  w0 = Debug.d_string(Debug.d_init(), "[TEST] \n");
+  w2 = Debug.d_int(w0, getDirection(sens));
+  rspeed = { left = (leftSpeed); right = (rightSpeed) };
   arriving = false;
+
 tel

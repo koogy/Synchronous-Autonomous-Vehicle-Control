@@ -1,0 +1,129 @@
+open Globals
+open Utilities
+node power2(value1 : int) returns (v : int)
+let
+  v = (value1 * value1)
+tel
+
+node compare_colors(color1 : Globals.color; color2 : Globals.color)
+returns (v : float)
+var v_6 : int; v_7 : int; v_8 : float; v_9 : int; v_10 : int; v_11 : float;
+    v_12 : float; v_13 : int; v_14 : int; v_15 : float; v_16 : float;
+let
+  v = Mathext.sqrt(v_16);
+  v_16 = (v_12 +. v_15);
+  v_15 = Mathext.float(v_14);
+  v_14 = power2(v_13);
+  v_13 = (color1.Globals.blue - color2.Globals.blue);
+  v_12 = (v_8 +. v_11);
+  v_11 = Mathext.float(v_10);
+  v_10 = power2(v_9);
+  v_9 = (color1.Globals.green - color2.Globals.green);
+  v_8 = Mathext.float(v_7);
+  v_7 = power2(v_6);
+  v_6 = (color1.Globals.red - color2.Globals.red)
+tel
+
+node getDistances(sens : Globals.sensors)
+returns (left : float; middle : float; right : float)
+var mid : Globals.color; v_17 : float; v_18 : float; v_19 : float;
+    v_20 : float; v_21 : float; v_22 : int; v_23 : float; v_24 : float;
+    v_25 : float; v_26 : float; v_27 : float; v_28 : int; v_29 : float;
+    v_30 : float; v_31 : float; v_32 : float; v_33 : float; v_34 : int;
+let
+  right = compare_colors(sens.Globals.s_road, Globals.magenta);
+  middle = compare_colors(sens.Globals.s_road, Globals.blue);
+  left = compare_colors(sens.Globals.s_road, Globals.cyan);
+  mid = { Globals.red = v_22; Globals.green = v_28; Globals.blue = v_34 };
+  v_34 = Mathext.int(v_33);
+  v_33 = (v_30 +. v_32);
+  v_32 = (v_31 *. 0.500000);
+  v_31 = Mathext.float(Globals.blue.Globals.blue);
+  v_30 = (v_29 *. 0.500000);
+  v_29 = Mathext.float(Globals.cyan.Globals.blue);
+  v_28 = Mathext.int(v_27);
+  v_27 = (v_24 +. v_26);
+  v_26 = (v_25 *. 0.500000);
+  v_25 = Mathext.float(Globals.blue.Globals.green);
+  v_24 = (v_23 *. 0.500000);
+  v_23 = Mathext.float(Globals.cyan.Globals.green);
+  v_22 = Mathext.int(v_21);
+  v_21 = (v_18 +. v_20);
+  v_20 = (v_19 *. 0.500000);
+  v_19 = Mathext.float(Globals.blue.Globals.red);
+  v_18 = (v_17 *. 0.500000);
+  v_17 = Mathext.float(Globals.cyan.Globals.red)
+tel
+
+node getDirection(sens : Globals.sensors) returns (direction : int)
+var right : float; middle : float; left : float; min : float; v : float;
+    v_35 : bool; v_36 : bool; v_37 : bool; v_38 : int; v_39 : int;
+let
+  direction = if v_35 then 1 else v_39;
+  v_39 = if v_36 then 0 else v_38;
+  v_38 = if v_37 then ~-(1) else 0;
+  v_37 = (min = right);
+  v_36 = (min = middle);
+  v_35 = (min = left);
+  min = Utilities.min_float(v, right);
+  v = Utilities.min_float(left, middle);
+  (left, middle, right) = getDistances(sens)
+tel
+
+node adjustSpeed(speed : float) returns (s : float)
+var v : float;
+let
+  s = Utilities.max_float(v, ~-.(300.000000));
+  v = Utilities.min_float(speed, 300.000000)
+tel
+
+node setMotorSpeed(leftSpeed : float; rightSpeed : float)
+returns (ls : float; rs : float)
+var v : float; v_40 : bool; v_41 : float; v_42 : float; v_43 : float;
+    v_44 : float; v_45 : bool; v_46 : float; v_47 : float; v_48 : float;
+let
+  rs = if v_45 then v_47 else v_48;
+  v_48 = adjustSpeed(rightSpeed);
+  v_47 = ~-.(v_46);
+  v_46 = adjustSpeed(rightSpeed);
+  v_45 = (v_44 <. 0.000000);
+  v_44 = adjustSpeed(rightSpeed);
+  ls = if v_40 then v_42 else v_43;
+  v_43 = adjustSpeed(leftSpeed);
+  v_42 = ~-.(v_41);
+  v_41 = adjustSpeed(leftSpeed);
+  v_40 = (v <. 0.000000);
+  v = adjustSpeed(leftSpeed)
+tel
+
+node controller(sens : Globals.sensors; iti : Globals.itielts)
+returns (rspeed : Globals.wheels; arriving : bool)
+var turn : float; tp : float; kp : float; error : float; rightSpeed : float;
+    leftSpeed : float; right : float; mid : float; left : float;
+    w2 : Debug.world; w0 : Debug.world; v : int; v_49 : int; v_50 : float;
+    v_51 : float; v_52 : float; v_53 : Debug.world; v_54 : int;
+let
+  arriving = false;
+  rspeed = { Globals.left = leftSpeed; Globals.right = rightSpeed };
+  w2 = Debug.d_int(w0, v_54);
+  v_54 = getDirection(sens);
+  w0 = Debug.d_string(v_53, "[TEST] \n");
+  v_53 = Debug.d_init();
+  () = Trace.trace_float("rightSpeed", rightSpeed);
+  () = Trace.trace_float("leftSpeed", leftSpeed);
+  (leftSpeed, rightSpeed) = setMotorSpeed(v_51, v_52);
+  v_52 = (tp -. turn);
+  v_51 = (tp +. turn);
+  () = Trace.trace_float("error", error);
+  () = Trace.trace_float("turn", turn);
+  turn = (kp *. error);
+  error = (mid *. v_50);
+  v_50 = Mathext.float(v_49);
+  v_49 = getDirection(sens);
+  (left, mid, right) = getDistances(sens);
+  () = Trace.trace_int("Direction", v);
+  v = getDirection(sens);
+  tp = 300.000000;
+  kp = 14.000000
+tel
+
