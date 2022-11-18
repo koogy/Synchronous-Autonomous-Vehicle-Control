@@ -48,7 +48,7 @@ clean:
 	rm -f $(subst .o,.h,$(HEPT_OBJ))
 
 test: $(TARGET)
-	./$< -o logs.txt assets/03.map
+	./$< -o logs.txt assets/04.map
 
 $(TARGET): $(OBJ)
 	$(CC) $^ $(LDFLAGS) -o $@

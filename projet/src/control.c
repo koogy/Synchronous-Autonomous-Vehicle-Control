@@ -1,4 +1,4 @@
-/* --- Generated the 18/11/2022 at 0:14 --- */
+/* --- Generated the 18/11/2022 at 1:0 --- */
 /* --- heptagon compiler, version 1.05.00 (compiled wed. oct. 5 14:31:43 CET 2022) --- */
 /* --- Command line: /home/alex/.opam/default/bin/heptc -c -target c control.ept --- */
 
@@ -78,9 +78,6 @@ void Control__getDistances_step(Globals__sensors sens,
   Control__compare_colors_step(sens.s_road, Globals__magenta,
                                &Control__compare_colors_out_st);
   _out->right = Control__compare_colors_out_st.v;
-  Control__compare_colors_step(sens.s_road, Globals__blue,
-                               &Control__compare_colors_out_st);
-  _out->middle = Control__compare_colors_out_st.v;
   Control__compare_colors_step(sens.s_road, Globals__cyan,
                                &Control__compare_colors_out_st);
   _out->left = Control__compare_colors_out_st.v;
@@ -113,12 +110,14 @@ void Control__getDistances_step(Globals__sensors sens,
   v_22 = Mathext__int_out_st.o;
   mid.red = v_22;
   mid.green = v_28;
-  mid.blue = v_34;;
+  mid.blue = v_34;
+  Control__compare_colors_step(sens.s_road, mid,
+                               &Control__compare_colors_out_st);
+  _out->middle = Control__compare_colors_out_st.v;;
 }
 
-void Control__getDirection_step(Globals__sensors sens,
+void Control__getDirection_step(float left, float middle, float right,
                                 Control__getDirection_out* _out) {
-  Control__getDistances_out Control__getDistances_out_st;
   Utilities__min_float_out Utilities__min_float_out_st;
   
   int v_39;
@@ -128,13 +127,6 @@ void Control__getDirection_step(Globals__sensors sens,
   int v_35;
   float v;
   float min;
-  float left;
-  float middle;
-  float right;
-  Control__getDistances_step(sens, &Control__getDistances_out_st);
-  left = Control__getDistances_out_st.left;
-  middle = Control__getDistances_out_st.middle;
-  right = Control__getDistances_out_st.right;
   Utilities__min_float_step(left, middle, &Utilities__min_float_out_st);
   v = Utilities__min_float_out_st.o;
   Utilities__min_float_step(v, right, &Utilities__min_float_out_st);
@@ -220,13 +212,13 @@ void Control__controller_step(Globals__sensors sens, Globals__itielts iti,
   float kp;
   float tp;
   float turn;
-  _out->arriving = false;
-  Control__getDirection_step(sens, &Control__getDirection_out_st);
-  v = Control__getDirection_out_st.direction;
   Control__getDistances_step(sens, &Control__getDistances_out_st);
   left = Control__getDistances_out_st.left;
   mid = Control__getDistances_out_st.middle;
   right = Control__getDistances_out_st.right;
+  _out->arriving = false;
+  Control__getDirection_step(left, mid, right, &Control__getDirection_out_st);
+  v = Control__getDirection_out_st.direction;
   Mathext__float_step(v, &Mathext__float_out_st);
   v_45 = Mathext__float_out_st.o;
   error = (mid*v_45);

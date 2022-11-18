@@ -1,4 +1,4 @@
-/* --- Generated the 18/11/2022 at 0:14 --- */
+/* --- Generated the 18/11/2022 at 1:0 --- */
 /* --- heptagon compiler, version 1.05.00 (compiled wed. oct. 5 14:31:43 CET 2022) --- */
 /* --- Command line: /home/alex/.opam/default/bin/heptc -c -target c control.ept --- */
 
@@ -36,7 +36,7 @@ typedef struct Control__getDirection_out {
   int direction;
 } Control__getDirection_out;
 
-void Control__getDirection_step(Globals__sensors sens,
+void Control__getDirection_step(float left, float middle, float right,
                                 Control__getDirection_out* _out);
 
 typedef struct Control__adjustSpeed_out {

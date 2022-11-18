@@ -22,14 +22,14 @@ let
 
   mid = {red = Mathext.int((Mathext.float(cyan.red) *. 0.5) +. (Mathext.float(blue.red) *. 0.5)) ; green = Mathext.int((Mathext.float(cyan.green) *. 0.5) +. (Mathext.float(blue.green) *. 0.5))  ; blue = Mathext.int((Mathext.float(cyan.blue) *. 0.5) +. (Mathext.float(blue.blue) *. 0.5)) };
   left = compare_colors(sens.s_road, cyan) ;
-  middle = compare_colors(sens.s_road, blue);
+  middle = compare_colors(sens.s_road, mid);
   right = compare_colors(sens.s_road, magenta)
 tel
 
-fun getDirection(sens :sensors) returns ( direction : int)
-var min, left,middle, right : float;
+fun getDirection(left,middle,right: float) returns ( direction : int)
+var min :float;
 let
-  (left,middle,right) = getDistances(sens);
+  
   min = min_float(min_float(left,middle),right);
   direction = if (min = left) then 1
               else if (min = middle) then 0
@@ -59,7 +59,7 @@ let
   kp = 0.3;
   tp = 300.0;
   (left,mid,right) = (getDistances(sens));
-  error =  mid *. Mathext.float(getDirection(sens));
+  error =  mid *. Mathext.float(getDirection(left,mid,right));
   turn = (kp *. error);
 
   (leftSpeed,rightSpeed) = setMotorSpeed(tp +.turn, tp -. turn);

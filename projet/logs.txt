@@ -1,26 +1,30 @@
 [log] logging to logs.txt
-[map assets/03.map] read map: oneway_ea
-[map assets/03.map] read graphics: map_03_oneway_ea.bmp
-[map assets/03.map] read guide: b-03.bmp
-[map assets/03.map] read init: x = 20.000000, y = 20.000000, head = 35.000000
-[map assets/03.map] starting to read segment rd of size 5
-[map assets/03.map] finished reading segment rd
-[map assets/03.map] starting to read segment wp of size 4
-[map assets/03.map] finished reading segment wp
-[map assets/03.map] starting to read segment tl of size 2
-[map assets/03.map] finished reading segment tl
-[map assets/03.map] starting to read segment st of size 2
-[map assets/03.map] finished reading segment st
-[map assets/03.map] starting to read segment obst of size 0
-[map assets/03.map] finished reading segment obst
-[map assets/03.map] starting to read segment iti of size 5
-[map assets/03.map] finished reading segment iti
-[sdl] loaded texture b-03.bmp
+[map assets/04.map] read map: olympic_cut
+[map assets/04.map] read graphics: map_04_olympic_cut.bmp
+[map assets/04.map] read guide: b-04.bmp
+[map assets/04.map] read init: x = 10.000000, y = 150.000000, head = 0.000000
+[map assets/04.map] starting to read segment rd of size 5
+[map assets/04.map] finished reading segment rd
+[map assets/04.map] starting to read segment wp of size 4
+[map assets/04.map] finished reading segment wp
+[map assets/04.map] starting to read segment tl of size 0
+[map assets/04.map] finished reading segment tl
+[map assets/04.map] starting to read segment st of size 0
+[map assets/04.map] finished reading segment st
+[map assets/04.map] starting to read segment obst of size 0
+[map assets/04.map] finished reading segment obst
+[map assets/04.map] starting to read segment iti of size 6
+[map assets/04.map] finished reading segment iti
+[sdl] loaded texture b-04.bmp
 [sdl] loaded texture orange.bmp
 [sdl] loaded texture obst.bmp
 [simulation] starting (16 ms/cycle)
 [sdl] no audio device
-[audio] car has run a red light
-[simulation 00002922] shutting down, score = 37900, time = 28.400000
+[audio] car is going too fast
+[sdl] no audio device
+[audio] car goes in the wrong direction
+[sdl] no audio device
+[audio] car is going too fast
+[simulation 00000756] shutting down, score = 12260, time = 5.560000
 [simulation] race quit before finishing
 [log] shutting down, closing logs.txt

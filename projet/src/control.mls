@@ -32,7 +32,7 @@ var mid : Globals.color; v_17 : float; v_18 : float; v_19 : float;
     v_30 : float; v_31 : float; v_32 : float; v_33 : float; v_34 : int;
 let
   right = compare_colors(sens.Globals.s_road, Globals.magenta);
-  middle = compare_colors(sens.Globals.s_road, Globals.blue);
+  middle = compare_colors(sens.Globals.s_road, mid);
   left = compare_colors(sens.Globals.s_road, Globals.cyan);
   mid = { Globals.red = v_22; Globals.green = v_28; Globals.blue = v_34 };
   v_34 = Mathext.int(v_33);
@@ -55,9 +55,10 @@ let
   v_17 = Mathext.float(Globals.cyan.Globals.red)
 tel
 
-node getDirection(sens : Globals.sensors) returns (direction : int)
-var right : float; middle : float; left : float; min : float; v : float;
-    v_35 : bool; v_36 : bool; v_37 : bool; v_38 : int; v_39 : int;
+node getDirection(left : float; middle : float; right : float)
+returns (direction : int)
+var min : float; v : float; v_35 : bool; v_36 : bool; v_37 : bool;
+    v_38 : int; v_39 : int;
 let
   direction = if v_35 then 1 else v_39;
   v_39 = if v_36 then 0 else v_38;
@@ -66,8 +67,7 @@ let
   v_36 = (min = middle);
   v_35 = (min = left);
   min = Utilities.min_float(v, right);
-  v = Utilities.min_float(left, middle);
-  (left, middle, right) = getDistances(sens)
+  v = Utilities.min_float(left, middle)
 tel
 
 node adjustSpeed(speed : float) returns (s : float)
@@ -106,7 +106,7 @@ let
   turn = (kp *. error);
   error = (mid *. v_45);
   v_45 = Mathext.float(v);
-  v = getDirection(sens);
+  v = getDirection(left, mid, right);
   (left, mid, right) = getDistances(sens);
   tp = 300.000000;
   kp = 0.300000
