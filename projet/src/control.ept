@@ -81,24 +81,20 @@ let
 (* 
   rspeed = if time >. (0.47123889803) then { left = (0.0); right = (0.0) } else
   { left = -. tp; right = (tp) }; *)
-
   (left,mid,right) = (getDistances(sens));
   error =  mid *. Mathext.float(getDirection(left,mid,right));
   turn = (kp *. error);
-
   (leftSpeed,rightSpeed) = setMotorSpeed(tp +.turn, tp -. turn);
   rspeed = { left = (leftSpeed); right = (rightSpeed) };
+  arriving = false;
+
   w0 = Debug.d_string(Debug.d_init(), "[TEST] \n");
   w1 = Debug.d_int(w0, 0);
   w2 = Debug.d_string(w1, "\n");
-
   w3 = Debug.d_float(w2, leftSpeed);
   w4 = Debug.d_string(w3, "\n");
-
   w5 = Debug.d_float(w4, rightSpeed);
   w6 = Debug.d_string(w5, "\n"); 
-  
-  arriving = false;
 
 tel
 
