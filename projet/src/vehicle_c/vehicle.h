@@ -1,4 +1,4 @@
-/* --- Generated the 18/11/2022 at 1:0 --- */
+/* --- Generated the 20/11/2022 at 0:3 --- */
 /* --- heptagon compiler, version 1.05.00 (compiled wed. oct. 5 14:31:43 CET 2022) --- */
 /* --- Command line: /home/alex/.opam/default/bin/heptc -c -target c vehicle.ept --- */
 
@@ -21,6 +21,7 @@ void Vehicle__car_geometry_step(Globals__phase phase, float vec[2],
 typedef struct Vehicle__driver_mem {
   Vehicle__st ck;
   int pnr;
+  Control__controller_mem controller;
 } Vehicle__driver_mem;
 
 typedef struct Vehicle__driver_out {

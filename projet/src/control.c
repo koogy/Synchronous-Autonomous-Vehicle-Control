@@ -1,4 +1,4 @@
-/* --- Generated the 18/11/2022 at 1:0 --- */
+/* --- Generated the 20/11/2022 at 0:3 --- */
 /* --- heptagon compiler, version 1.05.00 (compiled wed. oct. 5 14:31:43 CET 2022) --- */
 /* --- Command line: /home/alex/.opam/default/bin/heptc -c -target c control.ept --- */
 
@@ -6,6 +6,15 @@
 #include <string.h>
 #include <stdlib.h>
 #include "control.h"
+
+void Control__convertMsToRpm_step(float ms, Control__convertMsToRpm_out* _out) {
+  _out->rpm = (173.623577*ms);
+}
+
+void Control__convertRpmToDps_step(float rpm,
+                                   Control__convertRpmToDps_out* _out) {
+  _out->dps = (rpm*6.000000);
+}
 
 void Control__power2_step(int value1, Control__power2_out* _out) {
   _out->v = (value1*value1);
@@ -83,28 +92,28 @@ void Control__getDistances_step(Globals__sensors sens,
   _out->left = Control__compare_colors_out_st.v;
   Mathext__float_step(Globals__blue.blue, &Mathext__float_out_st);
   v_31 = Mathext__float_out_st.o;
-  v_32 = (v_31*0.500000);
+  v_32 = (v_31*Control__test);
   Mathext__float_step(Globals__cyan.blue, &Mathext__float_out_st);
   v_29 = Mathext__float_out_st.o;
-  v_30 = (v_29*0.500000);
+  v_30 = (v_29*Control__test);
   v_33 = (v_30+v_32);
   Mathext__int_step(v_33, &Mathext__int_out_st);
   v_34 = Mathext__int_out_st.o;
   Mathext__float_step(Globals__blue.green, &Mathext__float_out_st);
   v_25 = Mathext__float_out_st.o;
-  v_26 = (v_25*0.500000);
+  v_26 = (v_25*Control__test);
   Mathext__float_step(Globals__cyan.green, &Mathext__float_out_st);
   v_23 = Mathext__float_out_st.o;
-  v_24 = (v_23*0.500000);
+  v_24 = (v_23*Control__test);
   v_27 = (v_24+v_26);
   Mathext__int_step(v_27, &Mathext__int_out_st);
   v_28 = Mathext__int_out_st.o;
   Mathext__float_step(Globals__blue.red, &Mathext__float_out_st);
   v_19 = Mathext__float_out_st.o;
-  v_20 = (v_19*0.500000);
+  v_20 = (v_19*Control__test);
   Mathext__float_step(Globals__cyan.red, &Mathext__float_out_st);
   v_17 = Mathext__float_out_st.o;
-  v_18 = (v_17*0.500000);
+  v_18 = (v_17*Control__test);
   v_21 = (v_18+v_20);
   Mathext__int_step(v_21, &Mathext__int_out_st);
   v_22 = Mathext__int_out_st.o;
@@ -156,9 +165,9 @@ void Control__adjustSpeed_step(float speed, Control__adjustSpeed_out* _out) {
   Utilities__max_float_out Utilities__max_float_out_st;
   
   float v;
-  Utilities__min_float_step(speed, 300.000000, &Utilities__min_float_out_st);
+  Utilities__min_float_step(speed, Control__tp, &Utilities__min_float_out_st);
   v = Utilities__min_float_out_st.o;
-  Utilities__max_float_step(v, -300.000000, &Utilities__max_float_out_st);
+  Utilities__max_float_step(v, -416.696578, &Utilities__max_float_out_st);
   _out->s = Utilities__max_float_out_st.o;;
 }
 
@@ -166,71 +175,126 @@ void Control__setMotorSpeed_step(float leftSpeed, float rightSpeed,
                                  Control__setMotorSpeed_out* _out) {
   Control__adjustSpeed_out Control__adjustSpeed_out_st;
   
+  float v_48;
+  float v_47;
+  float v_46;
+  int v_45;
   float v_44;
-  int v_43;
+  float v_43;
   float v_42;
   float v_41;
   int v_40;
   float v;
-  v_44 = (-1.000000*rightSpeed);
   Control__adjustSpeed_step(rightSpeed, &Control__adjustSpeed_out_st);
-  v_42 = Control__adjustSpeed_out_st.s;
-  v_43 = (v_42<0.000000);
-  if (v_43) {
-    _out->rs = v_44;
+  v_48 = Control__adjustSpeed_out_st.s;
+  Control__adjustSpeed_step(rightSpeed, &Control__adjustSpeed_out_st);
+  v_46 = Control__adjustSpeed_out_st.s;
+  v_47 = (-1.000000*v_46);
+  Control__adjustSpeed_step(rightSpeed, &Control__adjustSpeed_out_st);
+  v_44 = Control__adjustSpeed_out_st.s;
+  v_45 = (v_44<0.000000);
+  if (v_45) {
+    _out->rs = v_47;
   } else {
-    _out->rs = rightSpeed;
+    _out->rs = v_48;
   };
-  v_41 = (-1.000000*leftSpeed);
+  Control__adjustSpeed_step(leftSpeed, &Control__adjustSpeed_out_st);
+  v_43 = Control__adjustSpeed_out_st.s;
+  Control__adjustSpeed_step(leftSpeed, &Control__adjustSpeed_out_st);
+  v_41 = Control__adjustSpeed_out_st.s;
+  v_42 = (-1.000000*v_41);
   Control__adjustSpeed_step(leftSpeed, &Control__adjustSpeed_out_st);
   v = Control__adjustSpeed_out_st.s;
   v_40 = (v<0.000000);
   if (v_40) {
-    _out->ls = v_41;
+    _out->ls = v_42;
   } else {
-    _out->ls = leftSpeed;
+    _out->ls = v_43;
   };;
 }
 
+void Control__controller_reset(Control__controller_mem* self) {
+  self->v_49 = 0;
+}
+
 void Control__controller_step(Globals__sensors sens, Globals__itielts iti,
-                              Control__controller_out* _out) {
+                              Control__controller_out* _out,
+                              Control__controller_mem* self) {
   Control__getDistances_out Control__getDistances_out_st;
+  Debug__d_init_out Debug__d_init_out_st;
   Mathext__float_out Mathext__float_out_st;
   Control__getDirection_out Control__getDirection_out_st;
+  Debug__d_int_out Debug__d_int_out_st;
+  Debug__d_float_out Debug__d_float_out_st;
+  Debug__d_string_out Debug__d_string_out_st;
   Control__setMotorSpeed_out Control__setMotorSpeed_out_st;
   
-  float v_47;
-  float v_46;
-  float v_45;
+  Debug__world v_55;
+  float v_54;
+  float v_53;
+  float v_52;
+  int v_51;
+  float v_50;
   int v;
+  int cpt;
+  float time;
+  Debug__world w0;
+  Debug__world w1;
+  Debug__world w2;
+  Debug__world w3;
+  Debug__world w4;
+  Debug__world w5;
+  Debug__world w6;
   float left;
   float mid;
   float right;
   float leftSpeed;
   float rightSpeed;
   float error;
-  float kp;
-  float tp;
   float turn;
   Control__getDistances_step(sens, &Control__getDistances_out_st);
   left = Control__getDistances_out_st.left;
   mid = Control__getDistances_out_st.middle;
   right = Control__getDistances_out_st.right;
   _out->arriving = false;
+  Debug__d_init_step(&Debug__d_init_out_st);
+  v_55 = Debug__d_init_out_st.n;
+  Debug__d_string_step(v_55, "[TEST] \n", &Debug__d_string_out_st);
+  w0 = Debug__d_string_out_st.n;
+  Debug__d_int_step(w0, 0, &Debug__d_int_out_st);
+  w1 = Debug__d_int_out_st.n;
+  Debug__d_string_step(w1, "\n", &Debug__d_string_out_st);
+  w2 = Debug__d_string_out_st.n;
   Control__getDirection_step(left, mid, right, &Control__getDirection_out_st);
-  v = Control__getDirection_out_st.direction;
-  Mathext__float_step(v, &Mathext__float_out_st);
-  v_45 = Mathext__float_out_st.o;
-  error = (mid*v_45);
-  tp = 300.000000;
-  kp = 0.300000;
-  turn = (kp*error);
-  v_47 = (tp-turn);
-  v_46 = (tp+turn);
-  Control__setMotorSpeed_step(v_46, v_47, &Control__setMotorSpeed_out_st);
+  v_51 = Control__getDirection_out_st.direction;
+  Mathext__float_step(v_51, &Mathext__float_out_st);
+  v_52 = Mathext__float_out_st.o;
+  error = (mid*v_52);
+  turn = (Control__kp*error);
+  v_54 = (Control__tp-turn);
+  v_53 = (Control__tp+turn);
+  Control__setMotorSpeed_step(v_53, v_54, &Control__setMotorSpeed_out_st);
   leftSpeed = Control__setMotorSpeed_out_st.ls;
   rightSpeed = Control__setMotorSpeed_out_st.rs;
+  Debug__d_float_step(w2, leftSpeed, &Debug__d_float_out_st);
+  w3 = Debug__d_float_out_st.n;
+  Debug__d_string_step(w3, "\n", &Debug__d_string_out_st);
+  w4 = Debug__d_string_out_st.n;
+  Debug__d_float_step(w4, rightSpeed, &Debug__d_float_out_st);
+  w5 = Debug__d_float_out_st.n;
+  Debug__d_string_step(w5, "\n", &Debug__d_string_out_st);
+  w6 = Debug__d_string_out_st.n;
+  if (true) {
+    v = 1;
+  } else {
+    v = 0;
+  };
+  cpt = (v+self->v_49);
+  Mathext__float_step(cpt, &Mathext__float_out_st);
+  v_50 = Mathext__float_out_st.o;
+  time = (Globals__timestep*v_50);
   _out->rspeed.left = leftSpeed;
-  _out->rspeed.right = rightSpeed;;
+  _out->rspeed.right = rightSpeed;
+  self->v_49 = cpt;;
 }
 

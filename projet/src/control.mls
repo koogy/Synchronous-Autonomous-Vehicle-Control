@@ -1,5 +1,20 @@
 open Globals
 open Utilities
+const test = 0.500000
+const kp = 0.200000
+const tp = 416.696578
+node convertMsToRpm(ms : float) returns (rpm : float)
+let
+  rpm =
+    ((60.000000 /. (((2.000000 *. Globals.pi) *. Globals.cD) /. 100.000000))
+     *. ms)
+tel
+
+node convertRpmToDps(rpm : float) returns (dps : float)
+let
+  dps = (rpm *. 6.000000)
+tel
+
 node power2(value1 : int) returns (v : int)
 let
   v = (value1 * value1)
@@ -37,21 +52,21 @@ let
   mid = { Globals.red = v_22; Globals.green = v_28; Globals.blue = v_34 };
   v_34 = Mathext.int(v_33);
   v_33 = (v_30 +. v_32);
-  v_32 = (v_31 *. 0.500000);
+  v_32 = (v_31 *. test);
   v_31 = Mathext.float(Globals.blue.Globals.blue);
-  v_30 = (v_29 *. 0.500000);
+  v_30 = (v_29 *. test);
   v_29 = Mathext.float(Globals.cyan.Globals.blue);
   v_28 = Mathext.int(v_27);
   v_27 = (v_24 +. v_26);
-  v_26 = (v_25 *. 0.500000);
+  v_26 = (v_25 *. test);
   v_25 = Mathext.float(Globals.blue.Globals.green);
-  v_24 = (v_23 *. 0.500000);
+  v_24 = (v_23 *. test);
   v_23 = Mathext.float(Globals.cyan.Globals.green);
   v_22 = Mathext.int(v_21);
   v_21 = (v_18 +. v_20);
-  v_20 = (v_19 *. 0.500000);
+  v_20 = (v_19 *. test);
   v_19 = Mathext.float(Globals.blue.Globals.red);
-  v_18 = (v_17 *. 0.500000);
+  v_18 = (v_17 *. test);
   v_17 = Mathext.float(Globals.cyan.Globals.red)
 tel
 
@@ -73,42 +88,60 @@ tel
 node adjustSpeed(speed : float) returns (s : float)
 var v : float;
 let
-  s = Utilities.max_float(v, ~-.(300.000000));
-  v = Utilities.min_float(speed, 300.000000)
+  s = Utilities.max_float(v, ~-.(tp));
+  v = Utilities.min_float(speed, tp)
 tel
 
 node setMotorSpeed(leftSpeed : float; rightSpeed : float)
 returns (ls : float; rs : float)
-var v : float; v_40 : bool; v_41 : float; v_42 : float; v_43 : bool;
-    v_44 : float;
+var v : float; v_40 : bool; v_41 : float; v_42 : float; v_43 : float;
+    v_44 : float; v_45 : bool; v_46 : float; v_47 : float; v_48 : float;
 let
-  rs = if v_43 then v_44 else rightSpeed;
-  v_44 = (~-.(1.000000) *. rightSpeed);
-  v_43 = (v_42 <. 0.000000);
-  v_42 = adjustSpeed(rightSpeed);
-  ls = if v_40 then v_41 else leftSpeed;
-  v_41 = (~-.(1.000000) *. leftSpeed);
+  rs = if v_45 then v_47 else v_48;
+  v_48 = adjustSpeed(rightSpeed);
+  v_47 = (~-.(1.000000) *. v_46);
+  v_46 = adjustSpeed(rightSpeed);
+  v_45 = (v_44 <. 0.000000);
+  v_44 = adjustSpeed(rightSpeed);
+  ls = if v_40 then v_42 else v_43;
+  v_43 = adjustSpeed(leftSpeed);
+  v_42 = (~-.(1.000000) *. v_41);
+  v_41 = adjustSpeed(leftSpeed);
   v_40 = (v <. 0.000000);
   v = adjustSpeed(leftSpeed)
 tel
 
 node controller(sens : Globals.sensors; iti : Globals.itielts)
 returns (rspeed : Globals.wheels; arriving : bool)
-var turn : float; tp : float; kp : float; error : float; rightSpeed : float;
-    leftSpeed : float; right : float; mid : float; left : float; v : int;
-    v_45 : float; v_46 : float; v_47 : float;
+var turn : float; error : float; rightSpeed : float; leftSpeed : float;
+    right : float; mid : float; left : float; w6 : Debug.world;
+    w5 : Debug.world; w4 : Debug.world; w3 : Debug.world; w2 : Debug.world;
+    w1 : Debug.world; w0 : Debug.world; time : float; cpt : int; v : int;
+    v_49 : int; v_50 : float; v_51 : int; v_52 : float; v_53 : float;
+    v_54 : float; v_55 : Debug.world;
 let
   arriving = false;
+  w6 = Debug.d_string(w5, "\n");
+  w5 = Debug.d_float(w4, rightSpeed);
+  w4 = Debug.d_string(w3, "\n");
+  w3 = Debug.d_float(w2, leftSpeed);
+  w2 = Debug.d_string(w1, "\n");
+  w1 = Debug.d_int(w0, 0);
+  w0 = Debug.d_string(v_55, "[TEST] \n");
+  v_55 = Debug.d_init();
   rspeed = { Globals.left = leftSpeed; Globals.right = rightSpeed };
-  (leftSpeed, rightSpeed) = setMotorSpeed(v_46, v_47);
-  v_47 = (tp -. turn);
-  v_46 = (tp +. turn);
+  (leftSpeed, rightSpeed) = setMotorSpeed(v_53, v_54);
+  v_54 = (tp -. turn);
+  v_53 = (tp +. turn);
   turn = (kp *. error);
-  error = (mid *. v_45);
-  v_45 = Mathext.float(v);
-  v = getDirection(left, mid, right);
+  error = (mid *. v_52);
+  v_52 = Mathext.float(v_51);
+  v_51 = getDirection(left, mid, right);
   (left, mid, right) = getDistances(sens);
-  tp = 300.000000;
-  kp = 0.300000
+  time = (Globals.timestep *. v_50);
+  v_50 = Mathext.float(cpt);
+  cpt = (v + v_49);
+  v_49 = 0 fby cpt;
+  v = if true then 1 else 0
 tel
 

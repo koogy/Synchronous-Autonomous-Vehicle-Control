@@ -4,7 +4,23 @@ open Utilities
   blue middle
   magenta right 
  *)
+const test : float = 0.5
+const kp : float = 0.2
+const tp : float =  416.696578277
 
+(*  *)
+
+fun convertMsToRpm(ms : float) returns (rpm : float)
+let
+  rpm = (60.0 /. (2.0 *. pi *. cD/.100.0)) *. ms
+tel
+
+fun convertRpmToDps(rpm : float) returns (dps : float)
+let
+  dps = rpm *. 6.0
+tel
+
+(* PID *)
 fun power2(value1 : int) returns (v : int)
 let 
   v = value1*value1;
@@ -20,7 +36,7 @@ fun getDistances(sens : sensors) returns ( left, middle, right: float)
 var mid : color;
 let
 
-  mid = {red = Mathext.int((Mathext.float(cyan.red) *. 0.5) +. (Mathext.float(blue.red) *. 0.5)) ; green = Mathext.int((Mathext.float(cyan.green) *. 0.5) +. (Mathext.float(blue.green) *. 0.5))  ; blue = Mathext.int((Mathext.float(cyan.blue) *. 0.5) +. (Mathext.float(blue.blue) *. 0.5)) };
+  mid = {red = Mathext.int((Mathext.float(cyan.red) *. test) +. (Mathext.float(blue.red) *. test)) ; green = Mathext.int((Mathext.float(cyan.green) *. test) +. (Mathext.float(blue.green) *. test))  ; blue = Mathext.int((Mathext.float(cyan.blue) *. test) +. (Mathext.float(blue.blue) *. test)) };
   left = compare_colors(sens.s_road, cyan) ;
   middle = compare_colors(sens.s_road, mid);
   right = compare_colors(sens.s_road, magenta)
@@ -39,40 +55,49 @@ tel
 
 fun adjustSpeed(speed: float) returns (s:float)
 let
-  s= max_float(min_float(speed, 300.0), -.300.0);
+  s= max_float(min_float(speed, tp), -.tp);
 tel 
 
 fun setMotorSpeed(leftSpeed,rightSpeed : float ) returns (ls,rs : float)  
 let
-	  ls = if adjustSpeed(leftSpeed) <. 0.0 then (-.1.0) *. ((leftSpeed)) else (leftSpeed);
-		rs = if adjustSpeed(rightSpeed)<. 0.0 then (-.1.0) *.((rightSpeed)) else (rightSpeed);
+	  ls = if adjustSpeed(leftSpeed) <. 0.0 then (-.1.0) *. (adjustSpeed(leftSpeed)) else adjustSpeed(leftSpeed);
+		rs = if adjustSpeed(rightSpeed)<. 0.0 then (-.1.0) *.(adjustSpeed(rightSpeed)) else adjustSpeed(rightSpeed);
 tel 
 
 
 node controller(sens : sensors; iti : itielts)
        returns (rspeed : wheels; arriving : bool)
 
-var (* w0,w1,w2,w3,w4,w5,w6 : Debug.world;  *)left,mid,right,leftSpeed,rightSpeed,error, kp,tp, turn: float;
+var 
+cpt : int; 
+time: float; 
+w0,w1,w2,w3,w4,w5,w6 : Debug.world; 
+left,mid,right,leftSpeed,rightSpeed,error,turn: float;
 
 
 let
-  kp = 0.3;
-  tp = 300.0;
+  cpt = (if true then 1 else 0) + (0 fby cpt);
+  time = timestep *. Mathext.float(cpt);
+(* 
+  rspeed = if time >. (0.47123889803) then { left = (0.0); right = (0.0) } else
+  { left = -. tp; right = (tp) }; *)
+
   (left,mid,right) = (getDistances(sens));
   error =  mid *. Mathext.float(getDirection(left,mid,right));
   turn = (kp *. error);
 
   (leftSpeed,rightSpeed) = setMotorSpeed(tp +.turn, tp -. turn);
-(*   w0 = Debug.d_string(Debug.d_init(), "[TEST] \n");
-  w1 = Debug.d_int(w0, getDirection(sens));
+  rspeed = { left = (leftSpeed); right = (rightSpeed) };
+  w0 = Debug.d_string(Debug.d_init(), "[TEST] \n");
+  w1 = Debug.d_int(w0, 0);
   w2 = Debug.d_string(w1, "\n");
 
   w3 = Debug.d_float(w2, leftSpeed);
   w4 = Debug.d_string(w3, "\n");
 
   w5 = Debug.d_float(w4, rightSpeed);
-  w6 = Debug.d_string(w5, "\n"); *)
-  rspeed = { left = (leftSpeed); right = (rightSpeed) };
+  w6 = Debug.d_string(w5, "\n"); 
+  
   arriving = false;
 
 tel
