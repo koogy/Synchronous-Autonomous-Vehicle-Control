@@ -1,7 +1,7 @@
 map "oneway_line"
 graphics "map_00_oneway_line.bmp"
 guide "b-00.bmp"
-init 50. 50. 23.703
+init 50. 50. 13.703
 rd 1
 line 1 30 50. 50. 550. 250.
 wp 1

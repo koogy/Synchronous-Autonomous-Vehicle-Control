@@ -1,4 +1,4 @@
-/* --- Generated the 20/11/2022 at 0:3 --- */
+/* --- Generated the 20/11/2022 at 17:48 --- */
 /* --- heptagon compiler, version 1.05.00 (compiled wed. oct. 5 14:31:43 CET 2022) --- */
 /* --- Command line: /home/alex/.opam/default/bin/heptc -c -target c control.ept --- */
 
@@ -161,14 +161,7 @@ void Control__getDirection_step(float left, float middle, float right,
 }
 
 void Control__adjustSpeed_step(float speed, Control__adjustSpeed_out* _out) {
-  Utilities__min_float_out Utilities__min_float_out_st;
-  Utilities__max_float_out Utilities__max_float_out_st;
-  
-  float v;
-  Utilities__min_float_step(speed, Control__tp, &Utilities__min_float_out_st);
-  v = Utilities__min_float_out_st.o;
-  Utilities__max_float_step(v, -416.696578, &Utilities__max_float_out_st);
-  _out->s = Utilities__max_float_out_st.o;;
+  _out->s = speed;
 }
 
 void Control__setMotorSpeed_step(float leftSpeed, float rightSpeed,
@@ -213,31 +206,13 @@ void Control__setMotorSpeed_step(float leftSpeed, float rightSpeed,
   };;
 }
 
-void Control__controller_reset(Control__controller_mem* self) {
-  self->v_49 = 0;
-}
-
-void Control__controller_step(Globals__sensors sens, Globals__itielts iti,
-                              Control__controller_out* _out,
-                              Control__controller_mem* self) {
-  Control__getDistances_out Control__getDistances_out_st;
+void Control__d_pid_step(string msg, float left, float mid, float right,
+                         float error, float turn, Control__d_pid_out* _out) {
   Debug__d_init_out Debug__d_init_out_st;
-  Mathext__float_out Mathext__float_out_st;
-  Control__getDirection_out Control__getDirection_out_st;
-  Debug__d_int_out Debug__d_int_out_st;
   Debug__d_float_out Debug__d_float_out_st;
   Debug__d_string_out Debug__d_string_out_st;
-  Control__setMotorSpeed_out Control__setMotorSpeed_out_st;
   
-  Debug__world v_55;
-  float v_54;
-  float v_53;
-  float v_52;
-  int v_51;
-  float v_50;
-  int v;
-  int cpt;
-  float time;
+  Debug__world v;
   Debug__world w0;
   Debug__world w1;
   Debug__world w2;
@@ -245,6 +220,85 @@ void Control__controller_step(Globals__sensors sens, Globals__itielts iti,
   Debug__world w4;
   Debug__world w5;
   Debug__world w6;
+  Debug__world w7;
+  Debug__world w8;
+  Debug__world w9;
+  Debug__world w10;
+  Debug__world w11;
+  Debug__d_init_step(&Debug__d_init_out_st);
+  v = Debug__d_init_out_st.n;
+  Debug__d_string_step(v, msg, &Debug__d_string_out_st);
+  w0 = Debug__d_string_out_st.n;
+  Debug__d_string_step(w0, "{ LEFT = ", &Debug__d_string_out_st);
+  w1 = Debug__d_string_out_st.n;
+  Debug__d_float_step(w1, left, &Debug__d_float_out_st);
+  w2 = Debug__d_float_out_st.n;
+  Debug__d_string_step(w2, "; MID = ", &Debug__d_string_out_st);
+  w3 = Debug__d_string_out_st.n;
+  Debug__d_float_step(w3, mid, &Debug__d_float_out_st);
+  w4 = Debug__d_float_out_st.n;
+  Debug__d_string_step(w4, "; RIGHT = ", &Debug__d_string_out_st);
+  w5 = Debug__d_string_out_st.n;
+  Debug__d_float_step(w5, right, &Debug__d_float_out_st);
+  w6 = Debug__d_float_out_st.n;
+  Debug__d_string_step(w6, " }\n{ ERRROR : ", &Debug__d_string_out_st);
+  w7 = Debug__d_string_out_st.n;
+  Debug__d_float_step(w7, error, &Debug__d_float_out_st);
+  w8 = Debug__d_float_out_st.n;
+  Debug__d_string_step(w8, "; TURN = ", &Debug__d_string_out_st);
+  w9 = Debug__d_string_out_st.n;
+  Debug__d_float_step(w9, turn, &Debug__d_float_out_st);
+  w10 = Debug__d_float_out_st.n;
+  Debug__d_string_step(w10, " }\n", &Debug__d_string_out_st);
+  w11 = Debug__d_string_out_st.n;;
+}
+
+void Control__dbg_direction_step(string msg, int direction,
+                                 Control__dbg_direction_out* _out) {
+  Debug__d_init_out Debug__d_init_out_st;
+  Debug__d_int_out Debug__d_int_out_st;
+  Debug__d_string_out Debug__d_string_out_st;
+  
+  Debug__world v;
+  Debug__world w0;
+  Debug__world w1;
+  Debug__world w2;
+  Debug__d_init_step(&Debug__d_init_out_st);
+  v = Debug__d_init_out_st.n;
+  Debug__d_string_step(v, msg, &Debug__d_string_out_st);
+  w0 = Debug__d_string_out_st.n;
+  Debug__d_int_step(w0, direction, &Debug__d_int_out_st);
+  w1 = Debug__d_int_out_st.n;
+  Debug__d_string_step(w1, " }\n ", &Debug__d_string_out_st);
+  w2 = Debug__d_string_out_st.n;;
+}
+
+void Control__controller_reset(Control__controller_mem* self) {
+  self->v_50 = 0.000000;
+}
+
+void Control__controller_step(Globals__sensors sens, Globals__itielts iti,
+                              Control__controller_out* _out,
+                              Control__controller_mem* self) {
+  Globals__dbg_color_out Globals__dbg_color_out_st;
+  Control__getDistances_out Control__getDistances_out_st;
+  Mathext__float_out Mathext__float_out_st;
+  Control__dbg_direction_out Control__dbg_direction_out_st;
+  Globals__dbg_wheels_out Globals__dbg_wheels_out_st;
+  Control__getDirection_out Control__getDirection_out_st;
+  Control__d_pid_out Control__d_pid_out_st;
+  Mathext__int_out Mathext__int_out_st;
+  Control__setMotorSpeed_out Control__setMotorSpeed_out_st;
+  
+  int v_57;
+  int v_56;
+  float v_55;
+  float v_54;
+  float v_53;
+  float v_52;
+  float v_51;
+  float v_49;
+  int v;
   float left;
   float mid;
   float right;
@@ -252,49 +306,45 @@ void Control__controller_step(Globals__sensors sens, Globals__itielts iti,
   float rightSpeed;
   float error;
   float turn;
+  float integral;
+  float testt;
+  Globals__dbg_color_step("Couleur \n", sens.s_road,
+                          &Globals__dbg_color_out_st);
   Control__getDistances_step(sens, &Control__getDistances_out_st);
   left = Control__getDistances_out_st.left;
   mid = Control__getDistances_out_st.middle;
   right = Control__getDistances_out_st.right;
   _out->arriving = false;
-  Debug__d_init_step(&Debug__d_init_out_st);
-  v_55 = Debug__d_init_out_st.n;
-  Debug__d_string_step(v_55, "[TEST] \n", &Debug__d_string_out_st);
-  w0 = Debug__d_string_out_st.n;
-  Debug__d_int_step(w0, 0, &Debug__d_int_out_st);
-  w1 = Debug__d_int_out_st.n;
-  Debug__d_string_step(w1, "\n", &Debug__d_string_out_st);
-  w2 = Debug__d_string_out_st.n;
   Control__getDirection_step(left, mid, right, &Control__getDirection_out_st);
-  v_51 = Control__getDirection_out_st.direction;
-  Mathext__float_step(v_51, &Mathext__float_out_st);
-  v_52 = Mathext__float_out_st.o;
-  error = (mid*v_52);
-  turn = (Control__kp*error);
+  v = Control__getDirection_out_st.direction;
+  Mathext__float_step(v, &Mathext__float_out_st);
+  v_49 = Mathext__float_out_st.o;
+  error = (mid*v_49);
+  v_51 = (Control__kp*error);
+  integral = (self->v_50+error);
+  v_52 = (Control__ki*integral);
+  turn = (v_51+v_52);
+  Control__d_pid_step("PID \n", left, mid, right, error, turn,
+                      &Control__d_pid_out_st);
+  v_55 = (Control__tp+turn);
+  Mathext__int_step(v_55, &Mathext__int_out_st);
+  v_56 = Mathext__int_out_st.o;
+  Control__dbg_direction_step("DIRECTION : ", v_56,
+                              &Control__dbg_direction_out_st);
   v_54 = (Control__tp-turn);
   v_53 = (Control__tp+turn);
   Control__setMotorSpeed_step(v_53, v_54, &Control__setMotorSpeed_out_st);
   leftSpeed = Control__setMotorSpeed_out_st.ls;
   rightSpeed = Control__setMotorSpeed_out_st.rs;
-  Debug__d_float_step(w2, leftSpeed, &Debug__d_float_out_st);
-  w3 = Debug__d_float_out_st.n;
-  Debug__d_string_step(w3, "\n", &Debug__d_string_out_st);
-  w4 = Debug__d_string_out_st.n;
-  Debug__d_float_step(w4, rightSpeed, &Debug__d_float_out_st);
-  w5 = Debug__d_float_out_st.n;
-  Debug__d_string_step(w5, "\n", &Debug__d_string_out_st);
-  w6 = Debug__d_string_out_st.n;
-  if (true) {
-    v = 1;
-  } else {
-    v = 0;
-  };
-  cpt = (v+self->v_49);
-  Mathext__float_step(cpt, &Mathext__float_out_st);
-  v_50 = Mathext__float_out_st.o;
-  time = (Globals__timestep*v_50);
+  Mathext__int_step(leftSpeed, &Mathext__int_out_st);
+  v_57 = Mathext__int_out_st.o;
+  Control__dbg_direction_step("DIRECTION : ", v_57,
+                              &Control__dbg_direction_out_st);
+  testt = -509.000000;
   _out->rspeed.left = leftSpeed;
   _out->rspeed.right = rightSpeed;
-  self->v_49 = cpt;;
+  Globals__dbg_wheels_step("WHEELS \n ", _out->rspeed,
+                           &Globals__dbg_wheels_out_st);
+  self->v_50 = integral;;
 }
 

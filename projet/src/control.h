@@ -1,4 +1,4 @@
-/* --- Generated the 20/11/2022 at 0:3 --- */
+/* --- Generated the 20/11/2022 at 17:48 --- */
 /* --- heptagon compiler, version 1.05.00 (compiled wed. oct. 5 14:31:43 CET 2022) --- */
 /* --- Command line: /home/alex/.opam/default/bin/heptc -c -target c control.ept --- */
 
@@ -67,8 +67,20 @@ typedef struct Control__setMotorSpeed_out {
 void Control__setMotorSpeed_step(float leftSpeed, float rightSpeed,
                                  Control__setMotorSpeed_out* _out);
 
+typedef struct Control__d_pid_out {
+} Control__d_pid_out;
+
+void Control__d_pid_step(string msg, float left, float mid, float right,
+                         float error, float turn, Control__d_pid_out* _out);
+
+typedef struct Control__dbg_direction_out {
+} Control__dbg_direction_out;
+
+void Control__dbg_direction_step(string msg, int direction,
+                                 Control__dbg_direction_out* _out);
+
 typedef struct Control__controller_mem {
-  int v_49;
+  float v_50;
 } Control__controller_mem;
 
 typedef struct Control__controller_out {

@@ -5,7 +5,8 @@ open Utilities
   magenta right 
  *)
 const test : float = 0.5
-const kp : float = 0.2
+const kp : float = 3.25
+const ki : float = 0.0
 const tp : float =  416.696578277
 
 (*  *)
@@ -55,46 +56,73 @@ tel
 
 fun adjustSpeed(speed: float) returns (s:float)
 let
-  s= max_float(min_float(speed, tp), -.tp);
+  s= speed;
+(*   s= speed; *)
 tel 
 
 fun setMotorSpeed(leftSpeed,rightSpeed : float ) returns (ls,rs : float)  
+
+(* var 
+w0,w1,w2,w3,w4,w5,w6 : Debug.world;  *)
 let
-	  ls = if adjustSpeed(leftSpeed) <. 0.0 then (-.1.0) *. (adjustSpeed(leftSpeed)) else adjustSpeed(leftSpeed);
-		rs = if adjustSpeed(rightSpeed)<. 0.0 then (-.1.0) *.(adjustSpeed(rightSpeed)) else adjustSpeed(rightSpeed);
-tel 
-
-
-node controller(sens : sensors; iti : itielts)
-       returns (rspeed : wheels; arriving : bool)
-
-var 
-cpt : int; 
-time: float; 
-w0,w1,w2,w3,w4,w5,w6 : Debug.world; 
-left,mid,right,leftSpeed,rightSpeed,error,turn: float;
-
-
-let
-  cpt = (if true then 1 else 0) + (0 fby cpt);
-  time = timestep *. Mathext.float(cpt);
-(* 
-  rspeed = if time >. (0.47123889803) then { left = (0.0); right = (0.0) } else
-  { left = -. tp; right = (tp) }; *)
-  (left,mid,right) = (getDistances(sens));
-  error =  mid *. Mathext.float(getDirection(left,mid,right));
-  turn = (kp *. error);
-  (leftSpeed,rightSpeed) = setMotorSpeed(tp +.turn, tp -. turn);
-  rspeed = { left = (leftSpeed); right = (rightSpeed) };
-  arriving = false;
-
-  w0 = Debug.d_string(Debug.d_init(), "[TEST] \n");
+(*  w0 = Debug.d_string(Debug.d_init(), "[setMotorSpeed] \n");
   w1 = Debug.d_int(w0, 0);
   w2 = Debug.d_string(w1, "\n");
   w3 = Debug.d_float(w2, leftSpeed);
   w4 = Debug.d_string(w3, "\n");
   w5 = Debug.d_float(w4, rightSpeed);
-  w6 = Debug.d_string(w5, "\n"); 
+  w6 = Debug.d_string(w5, "\n");  *)
+	  ls = adjustSpeed(leftSpeed) 
+		rs = adjustSpeed(rightSpeed)
+
+
+fun d_pid(msg:string; left,mid,right, error,turn :float) returns ()
+var w0,w1, w2, w3, w4, w5, w6 ,w7,w8,w9,w10,w11: Debug.world;
+let
+  w0 = Debug.d_string(Debug.d_init(), msg);
+  w1 = Debug.d_string(w0, "{ LEFT = ");
+  w2 = Debug.d_float(w1, left);
+  w3 = Debug.d_string(w2, "; MID = ");
+  w4 = Debug.d_float(w3, mid);
+  w5 = Debug.d_string(w4, "; RIGHT = ");
+  w6 = Debug.d_float(w5, right);
+  w7 = Debug.d_string(w6, " }\n{ ERRROR : " );
+  w8 = Debug.d_float(w7, error);
+  w9 = Debug.d_string(w8, "; TURN = ");
+  w10 = Debug.d_float(w9, turn);
+  w11 = Debug.d_string(w10, " }\n" );
+tel
+
+fun dbg_direction(msg : string; direction : int) returns ()
+var w0, w1, w2: Debug.world;
+let
+  w0 = Debug.d_string(Debug.d_init(), msg);
+  w1 = Debug.d_int(w0,direction);
+  w2 = Debug.d_string(w1, " }\n ");
+tel
+
+node controller(sens : sensors; iti : itielts)
+       returns (rspeed : wheels; arriving : bool)
+
+var 
+left,mid,right,leftSpeed,rightSpeed,error,turn,integral,testt: float;
+
+
+let
+  testt = -. 509.0;
+  (left,mid,right) = (getDistances(sens));
+  error =  mid *. Mathext.float(getDirection(left,mid,right));
+  integral = (0.0 fby integral) +. error;
+  turn = ((kp *. error) +. ki *. integral);
+  (leftSpeed,rightSpeed) = setMotorSpeed(tp +. turn, tp -. turn);
+  rspeed = { left = (leftSpeed); right = (rightSpeed) };
+  arriving = false;
+
+  () = dbg_color("Couleur \n",sens.s_road);
+  () = dbg_wheels("WHEELS \n ", rspeed);
+  () = dbg_direction("DIRECTION : ",Mathext.int(tp +. turn));
+  () = dbg_direction("DIRECTION : ",Mathext.int(leftSpeed));
+  () = d_pid("PID \n", left,mid,right,error,turn);
 
 tel
 
