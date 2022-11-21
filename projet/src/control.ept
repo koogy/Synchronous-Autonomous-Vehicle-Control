@@ -39,7 +39,7 @@ let
   blue = Mathext.int((Mathext.float(cyan.blue) *. ratioL) +. (Mathext.float(blue.blue) *. ratioR)) };
   
   left = compare_colors(sens.s_road, cyan) ;
-  mid = compare_colors(sens.s_road, blue);
+  mid = compare_colors(sens.s_road, targetColor);
   right = compare_colors(sens.s_road, magenta)
 tel
 
@@ -147,6 +147,7 @@ let
          arriving = false;
          actionIndex =  (last actionIndex +1);
          act = ((iti[>actionIndex<]).act);
+     
       until (act = Turn) then Turn
             | (act = Go) then Running
             | (act = Stop) then Arrived 
@@ -180,13 +181,13 @@ let
           derivative = error -. lastError;
           lastError = last error;
           turn = (kp *. error) +. (ki *. integral) +. (kd *. derivative);
-        
+
           tp =  if (((iti[>actionIndex<]).act)= Go) then  convertMsToDps((iti[>actionIndex<]).param) else last tp;
           rspeed = setSpeed(turn,tp);
-     
           actionMark = if ((Utilities.compare_colors(sens.s_road, green) >=. 1.0) and ((timez -. lastActionTime) >. 0.5)) then true else false;
           tLight = if (Utilities.compare_colors(sens.s_front, red) >=. 1.0) then true else false;
           arriving = false;
+          () = dbg_sensors("SENSOR", sens);
 
       until (actionMark) then Action 
           | tLight then TrafficLight

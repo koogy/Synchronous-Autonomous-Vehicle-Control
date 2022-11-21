@@ -54,7 +54,7 @@ var targetColor : Globals.color; v_17 : float; v_18 : float; v_19 : float;
     v_30 : float; v_31 : float; v_32 : float; v_33 : float; v_34 : int;
 let
   right = compare_colors(sens.Globals.s_road, Globals.magenta);
-  mid = compare_colors(sens.Globals.s_road, Globals.blue);
+  mid = compare_colors(sens.Globals.s_road, targetColor);
   left = compare_colors(sens.Globals.s_road, Globals.cyan);
   targetColor =
     { Globals.red = v_22; Globals.green = v_28; Globals.blue = v_34 };
@@ -287,6 +287,7 @@ let
   v_99 = 0.000000 fby kp;
   lastActionTime_St_Running = (lastActionTime_1 when St_Running(ck));
   actionIndex_St_Running = (actionIndex_1 when St_Running(ck));
+  () = Globals.dbg_sensors("SENSOR", (sens when St_Running(ck)));
   arriving_St_Running = false;
   tLight = if v_98 then true else false;
   v_98 = (v_97 >=. 1.000000);

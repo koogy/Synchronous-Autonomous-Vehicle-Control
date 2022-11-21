@@ -1,4 +1,4 @@
-/* --- Generated the 21/11/2022 at 20:58 --- */
+/* --- Generated the 21/11/2022 at 21:57 --- */
 /* --- heptagon compiler, version 1.05.00 (compiled wed. oct. 5 14:31:43 CET 2022) --- */
 /* --- Command line: /home/alex/.opam/default/bin/heptc -c -target c control.ept --- */
 
@@ -98,9 +98,6 @@ void Control__getDistances_step(Globals__sensors sens,
   Control__compare_colors_step(sens.s_road, Globals__magenta,
                                &Control__compare_colors_out_st);
   _out->right = Control__compare_colors_out_st.v;
-  Control__compare_colors_step(sens.s_road, Globals__blue,
-                               &Control__compare_colors_out_st);
-  _out->mid = Control__compare_colors_out_st.v;
   Control__compare_colors_step(sens.s_road, Globals__cyan,
                                &Control__compare_colors_out_st);
   _out->left = Control__compare_colors_out_st.v;
@@ -133,7 +130,10 @@ void Control__getDistances_step(Globals__sensors sens,
   v_22 = Mathext__int_out_st.o;
   targetColor.red = v_22;
   targetColor.green = v_28;
-  targetColor.blue = v_34;;
+  targetColor.blue = v_34;
+  Control__compare_colors_step(sens.s_road, targetColor,
+                               &Control__compare_colors_out_st);
+  _out->mid = Control__compare_colors_out_st.v;;
 }
 
 void Control__getDirection_step(float left, float mid, float right,
@@ -384,16 +384,17 @@ void Control__controller_step(Globals__sensors sens, Globals__itielts iti,
                               Control__controller_out* _out,
                               Control__controller_mem* self) {
   Control__calculateKi_out Control__calculateKi_out_st;
-  Control__getDistances_out Control__getDistances_out_st;
-  Mathext__float_out Mathext__float_out_st;
   Control__getDirection_out Control__getDirection_out_st;
   Control__calculateKd_out Control__calculateKd_out_st;
-  Utilities__compare_colors_out Utilities__compare_colors_out_st;
   Control__convertMsToDps_out Control__convertMsToDps_out_st;
   Control__calculateKp_out Control__calculateKp_out_st;
-  Control__setSpeed_out Control__setSpeed_out_st;
   Control__getTimeAngle_out Control__getTimeAngle_out_st;
   Control__compare_colors_out Control__compare_colors_out_st;
+  Control__getDistances_out Control__getDistances_out_st;
+  Mathext__float_out Mathext__float_out_st;
+  Globals__dbg_sensors_out Globals__dbg_sensors_out_st;
+  Utilities__compare_colors_out Utilities__compare_colors_out_st;
+  Control__setSpeed_out Control__setSpeed_out_st;
   
   int v_60;
   float v_59;
@@ -591,6 +592,7 @@ void Control__controller_step(Globals__sensors sens, Globals__itielts iti,
       };
       lastActionTime_St_Running = self->lastActionTime_1;
       actionIndex_St_Running = self->actionIndex_1;
+      Globals__dbg_sensors_step("SENSOR", sens, &Globals__dbg_sensors_out_st);
       arriving_St_Running = false;
       Utilities__compare_colors_step(sens.s_front, Globals__red,
                                      &Utilities__compare_colors_out_st);
