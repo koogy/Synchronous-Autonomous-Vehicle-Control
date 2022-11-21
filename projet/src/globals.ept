@@ -94,7 +94,7 @@ const cD : float = 5.5
 
 const cDELTA : float = 0.0
 
-const cMAXWHEEL : float = 500.0
+const cMAXWHEEL : float = 1500.0
 
 const cMAXSPEED : float = 25.0
 
