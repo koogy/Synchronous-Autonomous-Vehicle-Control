@@ -25,7 +25,8 @@ let
       var arriving : bool;
       do (rspeed, arriving) = Control.controller(sens, iti);
          sta = Running
-      until arriving then Arrived | itr = Halt then Stopped
+      until arriving then Arrived 
+            | itr = Halt then Stopped
 
     state Arrived
       do rspeed = idlew;
