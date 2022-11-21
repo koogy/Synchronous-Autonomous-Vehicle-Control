@@ -6,6 +6,7 @@ CFLAGS=-Wall `pkg-config --cflags sdl2` -I `heptc -where`/c \
 	-D VERSION=$(VERSION) -g -fsanitize=undefined
 LDFLAGS=`pkg-config --libs sdl2` -lm -fsanitize=undefined
 HEPTC?=heptc
+level?=00
 
 HEPT_OBJ=\
 	src/challenge.o	\
@@ -48,7 +49,7 @@ clean:
 	rm -f $(subst .o,.h,$(HEPT_OBJ))
 
 test: $(TARGET)
-	./$< -o logs.txt assets/02.map
+	./$< -o logs.txt assets/$(level).map
 
 trace: 
 	make && ./hept-plot ./scontest assets/02.map

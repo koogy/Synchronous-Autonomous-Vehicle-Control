@@ -1,4 +1,4 @@
-/* --- Generated the 21/11/2022 at 18:42 --- */
+/* --- Generated the 21/11/2022 at 20:58 --- */
 /* --- heptagon compiler, version 1.05.00 (compiled wed. oct. 5 14:31:43 CET 2022) --- */
 /* --- Command line: /home/alex/.opam/default/bin/heptc -c -target c control.ept --- */
 
@@ -98,6 +98,9 @@ void Control__getDistances_step(Globals__sensors sens,
   Control__compare_colors_step(sens.s_road, Globals__magenta,
                                &Control__compare_colors_out_st);
   _out->right = Control__compare_colors_out_st.v;
+  Control__compare_colors_step(sens.s_road, Globals__blue,
+                               &Control__compare_colors_out_st);
+  _out->mid = Control__compare_colors_out_st.v;
   Control__compare_colors_step(sens.s_road, Globals__cyan,
                                &Control__compare_colors_out_st);
   _out->left = Control__compare_colors_out_st.v;
@@ -130,44 +133,48 @@ void Control__getDistances_step(Globals__sensors sens,
   v_22 = Mathext__int_out_st.o;
   targetColor.red = v_22;
   targetColor.green = v_28;
-  targetColor.blue = v_34;
-  Control__compare_colors_step(sens.s_road, targetColor,
-                               &Control__compare_colors_out_st);
-  _out->mid = Control__compare_colors_out_st.v;;
+  targetColor.blue = v_34;;
 }
 
 void Control__getDirection_step(float left, float mid, float right,
-                                Control__getDirection_out* _out) {
+                                float action, Control__getDirection_out* _out) {
   Utilities__min_float_out Utilities__min_float_out_st;
   
+  int v_42;
+  int v_41;
+  int v_40;
   int v_39;
   int v_38;
   int v_37;
   int v_36;
-  int v_35;
+  float v_35;
   float v;
   float min;
+  Utilities__min_float_step(action, right, &Utilities__min_float_out_st);
+  v_35 = Utilities__min_float_out_st.o;
   Utilities__min_float_step(left, mid, &Utilities__min_float_out_st);
   v = Utilities__min_float_out_st.o;
-  Utilities__min_float_step(v, right, &Utilities__min_float_out_st);
+  Utilities__min_float_step(v, v_35, &Utilities__min_float_out_st);
   min = Utilities__min_float_out_st.o;
-  v_37 = (min==right);
-  if (v_37) {
-    v_38 = -1;
+  v_40 = (min==right);
+  if (v_40) {
+    v_41 = -1;
   } else {
-    v_38 = 0;
+    v_41 = 0;
   };
-  v_36 = (min==mid);
+  v_38 = (min==action);
+  v_37 = (min==mid);
+  v_39 = (v_37||v_38);
+  if (v_39) {
+    v_42 = 0;
+  } else {
+    v_42 = v_41;
+  };
+  v_36 = (min==left);
   if (v_36) {
-    v_39 = 0;
-  } else {
-    v_39 = v_38;
-  };
-  v_35 = (min==left);
-  if (v_35) {
     _out->direction = 1;
   } else {
-    _out->direction = v_39;
+    _out->direction = v_42;
   };;
 }
 
@@ -175,45 +182,48 @@ void Control__setSpeed_step(float turn, float tp, Control__setSpeed_out* _out) {
   Utilities__min_float_out Utilities__min_float_out_st;
   Utilities__max_float_out Utilities__max_float_out_st;
   
+  float v_47;
+  float v_46;
+  float v_45;
   float v_44;
   float v_43;
-  float v_42;
-  float v_41;
-  float v_40;
   float v;
   float left;
   float right;
-  v_44 = -(tp);
-  v_42 = (tp-turn);
-  Utilities__min_float_step(v_42, tp, &Utilities__min_float_out_st);
-  v_43 = Utilities__min_float_out_st.o;
-  Utilities__max_float_step(v_43, v_44, &Utilities__max_float_out_st);
+  v_47 = -(tp);
+  v_45 = (tp-turn);
+  Utilities__min_float_step(v_45, tp, &Utilities__min_float_out_st);
+  v_46 = Utilities__min_float_out_st.o;
+  Utilities__max_float_step(v_46, v_47, &Utilities__max_float_out_st);
   right = Utilities__max_float_out_st.o;
-  v_41 = -(tp);
+  v_44 = -(tp);
   v = (tp+turn);
   Utilities__min_float_step(v, tp, &Utilities__min_float_out_st);
-  v_40 = Utilities__min_float_out_st.o;
-  Utilities__max_float_step(v_40, v_41, &Utilities__max_float_out_st);
+  v_43 = Utilities__min_float_out_st.o;
+  Utilities__max_float_step(v_43, v_44, &Utilities__max_float_out_st);
   left = Utilities__max_float_out_st.o;
   _out->rspeed.left = left;
   _out->rspeed.right = right;;
 }
 
-void Control__getTimeAngle_step(float deg, Control__getTimeAngle_out* _out) {
+void Control__getTimeAngle_step(float deg, float ms,
+                                Control__getTimeAngle_out* _out) {
   Utilities__abs_out Utilities__abs_out_st;
   
-  float v_46;
-  float v_45;
+  float v_50;
+  float v_49;
+  float v_48;
   float v;
   float circumference;
   float arcLength;
+  v_50 = (ms/100.000000);
   Utilities__abs_step(deg, &Utilities__abs_out_st);
   v = Utilities__abs_out_st.o;
-  v_45 = (v/360.000000);
+  v_48 = (v/360.000000);
   circumference = 18.849556;
-  arcLength = (v_45*circumference);
-  v_46 = (arcLength/100.000000);
-  _out->time = (v_46/0.239983);;
+  arcLength = (v_48*circumference);
+  v_49 = (arcLength/100.000000);
+  _out->time = (v_49/v_50);;
 }
 
 void Control__d_pid_step(string msg, float left, float mid, float right,
@@ -268,13 +278,13 @@ void Control__dbg_int_step(string msg, int v, Control__dbg_int_out* _out) {
   Debug__d_int_out Debug__d_int_out_st;
   Debug__d_string_out Debug__d_string_out_st;
   
-  Debug__world v_47;
+  Debug__world v_51;
   Debug__world w0;
   Debug__world w1;
   Debug__world w2;
   Debug__d_init_step(&Debug__d_init_out_st);
-  v_47 = Debug__d_init_out_st.n;
-  Debug__d_string_step(v_47, msg, &Debug__d_string_out_st);
+  v_51 = Debug__d_init_out_st.n;
+  Debug__d_string_step(v_51, msg, &Debug__d_string_out_st);
   w0 = Debug__d_string_out_st.n;
   Debug__d_int_step(w0, v, &Debug__d_int_out_st);
   w1 = Debug__d_int_out_st.n;
@@ -287,13 +297,13 @@ void Control__dbg_bool_step(string msg, int v, Control__dbg_bool_out* _out) {
   Debug__d_bool_out Debug__d_bool_out_st;
   Debug__d_string_out Debug__d_string_out_st;
   
-  Debug__world v_48;
+  Debug__world v_52;
   Debug__world w0;
   Debug__world w1;
   Debug__world w2;
   Debug__d_init_step(&Debug__d_init_out_st);
-  v_48 = Debug__d_init_out_st.n;
-  Debug__d_string_step(v_48, msg, &Debug__d_string_out_st);
+  v_52 = Debug__d_init_out_st.n;
+  Debug__d_string_step(v_52, msg, &Debug__d_string_out_st);
   w0 = Debug__d_string_out_st.n;
   Debug__d_bool_step(w0, v, &Debug__d_bool_out_st);
   w1 = Debug__d_bool_out_st.n;
@@ -307,13 +317,13 @@ void Control__dbg_float_step(string msg, float v,
   Debug__d_float_out Debug__d_float_out_st;
   Debug__d_string_out Debug__d_string_out_st;
   
-  Debug__world v_49;
+  Debug__world v_53;
   Debug__world w0;
   Debug__world w1;
   Debug__world w2;
   Debug__d_init_step(&Debug__d_init_out_st);
-  v_49 = Debug__d_init_out_st.n;
-  Debug__d_string_step(v_49, msg, &Debug__d_string_out_st);
+  v_53 = Debug__d_init_out_st.n;
+  Debug__d_string_step(v_53, msg, &Debug__d_string_out_st);
   w0 = Debug__d_string_out_st.n;
   Debug__d_float_step(w0, v, &Debug__d_float_out_st);
   w1 = Debug__d_float_out_st.n;
@@ -334,40 +344,40 @@ void Control__calculateKp_step(float kc, Control__calculateKp_out* _out) {
 void Control__calculateKi_step(float kp, float dt, float pc,
                                Control__calculateKi_out* _out) {
   
-  float v_50;
+  float v_54;
   float v;
   v = (2.000000*kp);
-  v_50 = (v*dt);
-  _out->ki = (v_50/pc);;
+  v_54 = (v*dt);
+  _out->ki = (v_54/pc);;
 }
 
 void Control__calculateKd_step(float kp, float dt, float pc,
                                Control__calculateKd_out* _out) {
   
-  float v_51;
+  float v_55;
   float v;
-  v_51 = (8.000000*dt);
-  v = (kp*2.370000);
-  _out->kd = (v/v_51);;
+  v_55 = (8.000000*dt);
+  v = (kp*2.350000);
+  _out->kd = (v/v_55);;
 }
 
 void Control__controller_reset(Control__controller_mem* self) {
-  self->v_95 = 0.000000;
-  self->v_94 = 0.000000;
-  self->v_93 = 0.000000;
-  self->v_92 = 0.000000;
-  self->v_91 = 0.000000;
-  self->v_90 = 0.000000;
-  self->v_89 = 0.000000;
-  self->v_88 = 0.000000;
-  self->v_87 = 0.000000;
-  self->v_60 = 0;
+  self->v_107 = 0.000000;
+  self->v_106 = 0.000000;
+  self->v_105 = 0.000000;
+  self->v_104 = 0.000000;
+  self->v_103 = 0.000000;
+  self->v_102 = 0.000000;
+  self->v_101 = 0.000000;
+  self->v_100 = 0.000000;
+  self->v_99 = 0.000000;
+  self->v_67 = 0;
   self->tp_2 = 0.000000;
   self->lastActionTime_1 = 0.000000;
   self->actionIndex_1 = -1;
   self->pnr = false;
   self->ck = Control__St_Action;
-  self->v_52 = 0;
+  self->v_57 = 0;
 }
 
 void Control__controller_step(Globals__sensors sens, Globals__itielts iti,
@@ -383,41 +393,50 @@ void Control__controller_step(Globals__sensors sens, Globals__itielts iti,
   Control__calculateKp_out Control__calculateKp_out_st;
   Control__setSpeed_out Control__setSpeed_out_st;
   Control__getTimeAngle_out Control__getTimeAngle_out_st;
+  Control__compare_colors_out Control__compare_colors_out_st;
   
-  int v_55;
-  float v_54;
-  Globals__wheels v_66;
-  Globals__wheels v_65;
-  int v_64;
+  int v_60;
+  float v_59;
+  Globals__wheels v_77;
+  float v_76;
+  Globals__wheels v_75;
+  float v_74;
+  int v_73;
+  Globals__itielt v_72;
+  Globals__itielt v_71;
+  int v_70;
+  float v_69;
+  int v_68;
+  int v_66;
+  int v_65;
+  float v_64;
   Globals__itielt v_63;
-  float v_62;
-  int v_61;
-  int v_59;
-  int v_58;
-  float v_57;
-  Globals__itielt v_56;
+  int v_62;
+  Globals__itielt v_61;
   int cpt;
   float time;
-  int v_86;
+  float speed;
+  int v_98;
+  float v_97;
+  int v_96;
+  int v_95;
+  float v_94;
+  int v_93;
+  float v_92;
+  float v_91;
+  Globals__itielt v_90;
+  int v_89;
+  Globals__itielt v_88;
+  float v_87;
+  float v_86;
   float v_85;
-  int v_84;
-  int v_83;
+  float v_84;
+  float v_83;
   float v_82;
   int v_81;
   float v_80;
-  float v_79;
-  Globals__itielt v_78;
-  int v_77;
-  Globals__itielt v_76;
-  float v_75;
-  float v_74;
-  float v_73;
-  float v_72;
-  float v_71;
-  float v_70;
-  int v_69;
-  int v_68;
-  Control__st v_67;
+  int v_79;
+  Control__st v_78;
   float dt_3;
   float pc_3;
   float derivative_1;
@@ -442,14 +461,14 @@ void Control__controller_step(Globals__sensors sens, Globals__itielts iti,
   float derivative;
   float pc;
   float dt;
-  Globals__itielt v_103;
-  int v_102;
-  Control__st v_101;
-  int v_100;
-  Control__st v_99;
-  int v_98;
-  int v_97;
-  int v_96;
+  Globals__itielt v_115;
+  int v_114;
+  Control__st v_113;
+  int v_112;
+  Control__st v_111;
+  int v_110;
+  int v_109;
+  int v_108;
   Globals__action act;
   int nr_St_Arrived;
   Control__st ns_St_Arrived;
@@ -486,8 +505,8 @@ void Control__controller_step(Globals__sensors sens, Globals__itielts iti,
   int actionIndex_St_Action;
   int arriving_St_Action;
   Globals__wheels rspeed_St_Action;
-  float v_53;
-  int v;
+  float v_58;
+  int v_56;
   Control__st ns;
   int r;
   int nr;
@@ -498,14 +517,14 @@ void Control__controller_step(Globals__sensors sens, Globals__itielts iti,
   float tp;
   r = self->pnr;
   if (true) {
-    v = 1;
+    v_56 = 1;
   } else {
-    v = 0;
+    v_56 = 0;
   };
-  compt = (v+self->v_52);
+  compt = (v_56+self->v_57);
   Mathext__float_step(compt, &Mathext__float_out_st);
-  v_53 = Mathext__float_out_st.o;
-  timez = (Globals__timestep*v_53);
+  v_58 = Mathext__float_out_st.o;
+  timez = (Globals__timestep*v_58);
   switch (self->ck) {
     case Control__St_Action:
       tp_St_Action = self->tp_2;
@@ -515,31 +534,31 @@ void Control__controller_step(Globals__sensors sens, Globals__itielts iti,
       _out->arriving = arriving_St_Action;
       actionIndex = actionIndex_St_Action;
       lastActionTime = lastActionTime_St_Action;
-      v_103 = iti[between(actionIndex, Globals__itinum)];
-      act = v_103.act;
-      v_98 = (act==Globals__Stop);
-      if (v_98) {
-        v_100 = true;
-        v_99 = Control__St_Arrived;
+      v_115 = iti[between(actionIndex, Globals__itinum)];
+      act = v_115.act;
+      v_110 = (act==Globals__Stop);
+      if (v_110) {
+        v_112 = true;
+        v_111 = Control__St_Arrived;
       } else {
-        v_100 = false;
-        v_99 = Control__St_Action;
+        v_112 = false;
+        v_111 = Control__St_Action;
       };
-      v_97 = (act==Globals__Go);
-      if (v_97) {
-        v_102 = true;
-        v_101 = Control__St_Running;
+      v_109 = (act==Globals__Go);
+      if (v_109) {
+        v_114 = true;
+        v_113 = Control__St_Running;
       } else {
-        v_102 = v_100;
-        v_101 = v_99;
+        v_114 = v_112;
+        v_113 = v_111;
       };
-      v_96 = (act==Globals__Turn);
-      if (v_96) {
+      v_108 = (act==Globals__Turn);
+      if (v_108) {
         nr_St_Action = true;
         ns_St_Action = Control__St_Turn;
       } else {
-        nr_St_Action = v_102;
-        ns_St_Action = v_101;
+        nr_St_Action = v_114;
+        ns_St_Action = v_113;
       };
       rspeed_St_Action.right = 0.000000;
       rspeed_St_Action.left = 0.000000;
@@ -560,73 +579,76 @@ void Control__controller_step(Globals__sensors sens, Globals__itielts iti,
         ki_2 = 0.000000;
         kp_4 = 0.000000;
       } else {
-        dt_3 = self->v_95;
-        pc_3 = self->v_94;
-        derivative_1 = self->v_93;
-        integral_1 = self->v_92;
-        lastError_1 = self->v_91;
-        error_1 = self->v_90;
-        kd_2 = self->v_89;
-        ki_2 = self->v_88;
-        kp_4 = self->v_87;
+        dt_3 = self->v_107;
+        pc_3 = self->v_106;
+        derivative_1 = self->v_105;
+        integral_1 = self->v_104;
+        lastError_1 = self->v_103;
+        error_1 = self->v_102;
+        kd_2 = self->v_101;
+        ki_2 = self->v_100;
+        kp_4 = self->v_99;
       };
       lastActionTime_St_Running = self->lastActionTime_1;
       actionIndex_St_Running = self->actionIndex_1;
       arriving_St_Running = false;
       Utilities__compare_colors_step(sens.s_front, Globals__red,
                                      &Utilities__compare_colors_out_st);
-      v_85 = Utilities__compare_colors_out_st.correlation;
-      v_86 = (v_85>=1.000000);
-      if (v_86) {
+      v_97 = Utilities__compare_colors_out_st.correlation;
+      v_98 = (v_97>=1.000000);
+      if (v_98) {
         tLight = true;
       } else {
         tLight = false;
       };
       Utilities__compare_colors_step(sens.s_road, Globals__green,
                                      &Utilities__compare_colors_out_st);
-      v_80 = Utilities__compare_colors_out_st.correlation;
-      v_81 = (v_80>=1.000000);
+      v_92 = Utilities__compare_colors_out_st.correlation;
+      v_93 = (v_92>=1.000000);
       lastError = error_1;
-      v_71 = (0.666667*integral_1);
+      v_83 = (0.666667*integral_1);
+      Control__compare_colors_step(sens.s_road, Globals__green,
+                                   &Control__compare_colors_out_st);
+      v_80 = Control__compare_colors_out_st.v;
       Control__getDistances_step(sens, &Control__getDistances_out_st);
       left = Control__getDistances_out_st.left;
       mid = Control__getDistances_out_st.mid;
       right = Control__getDistances_out_st.right;
-      Control__getDirection_step(left, mid, right,
+      Control__getDirection_step(left, mid, right, v_80,
                                  &Control__getDirection_out_st);
-      v_69 = Control__getDirection_out_st.direction;
-      Mathext__float_step(v_69, &Mathext__float_out_st);
-      v_70 = Mathext__float_out_st.o;
-      error = (mid*v_70);
+      v_81 = Control__getDirection_out_st.direction;
+      Mathext__float_step(v_81, &Mathext__float_out_st);
+      v_82 = Mathext__float_out_st.o;
+      error = (mid*v_82);
       derivative = (error-lastError);
-      integral = (v_71+error);
+      integral = (v_83+error);
       Control__calculateKp_step(0.775000, &Control__calculateKp_out_st);
       kp = Control__calculateKp_out_st.kp;
-      v_72 = (kp*error);
+      v_84 = (kp*error);
       pc = 2.370000;
       dt = 0.016000;
       Control__calculateKd_step(kp, dt, pc, &Control__calculateKd_out_st);
       kd = Control__calculateKd_out_st.kd;
-      v_75 = (kd*derivative);
+      v_87 = (kd*derivative);
       Control__calculateKi_step(kp, dt, pc, &Control__calculateKi_out_st);
       ki = Control__calculateKi_out_st.ki;
-      v_73 = (ki*integral);
-      v_74 = (v_72+v_73);
-      turn = (v_74+v_75);
+      v_85 = (ki*integral);
+      v_86 = (v_84+v_85);
+      turn = (v_86+v_87);
       if (tLight) {
-        v_68 = true;
-        v_67 = Control__St_TrafficLight;
+        v_79 = true;
+        v_78 = Control__St_TrafficLight;
       } else {
-        v_68 = false;
-        v_67 = Control__St_Running;
+        v_79 = false;
+        v_78 = Control__St_Running;
       };
       _out->arriving = arriving_St_Running;
       actionIndex = actionIndex_St_Running;
       lastActionTime = lastActionTime_St_Running;
-      v_82 = (timez-lastActionTime);
-      v_83 = (v_82>0.500000);
-      v_84 = (v_81&&v_83);
-      if (v_84) {
+      v_94 = (timez-lastActionTime);
+      v_95 = (v_94>0.500000);
+      v_96 = (v_93&&v_95);
+      if (v_96) {
         actionMark = true;
       } else {
         actionMark = false;
@@ -635,17 +657,17 @@ void Control__controller_step(Globals__sensors sens, Globals__itielts iti,
         nr_St_Running = true;
         ns_St_Running = Control__St_Action;
       } else {
-        nr_St_Running = v_68;
-        ns_St_Running = v_67;
+        nr_St_Running = v_79;
+        ns_St_Running = v_78;
       };
-      v_78 = iti[between(actionIndex, Globals__itinum)];
-      Control__convertMsToDps_step(v_78.param,
+      v_90 = iti[between(actionIndex, Globals__itinum)];
+      Control__convertMsToDps_step(v_90.param,
                                    &Control__convertMsToDps_out_st);
-      v_79 = Control__convertMsToDps_out_st.dps;
-      v_76 = iti[between(actionIndex, Globals__itinum)];
-      v_77 = (v_76.act==Globals__Go);
-      if (v_77) {
-        tp_St_Running = v_79;
+      v_91 = Control__convertMsToDps_out_st.dps;
+      v_88 = iti[between(actionIndex, Globals__itinum)];
+      v_89 = (v_88.act==Globals__Go);
+      if (v_89) {
+        tp_St_Running = v_91;
       } else {
         tp_St_Running = self->tp_2;
       };
@@ -655,26 +677,26 @@ void Control__controller_step(Globals__sensors sens, Globals__itielts iti,
       ns = ns_St_Running;
       nr = nr_St_Running;
       _out->rspeed = rspeed_St_Running;
-      self->v_95 = dt;
-      self->v_94 = pc;
-      self->v_93 = derivative;
-      self->v_92 = integral;
-      self->v_91 = lastError;
-      self->v_90 = error;
-      self->v_89 = kd;
-      self->v_88 = ki;
-      self->v_87 = kp;
+      self->v_107 = dt;
+      self->v_106 = pc;
+      self->v_105 = derivative;
+      self->v_104 = integral;
+      self->v_103 = lastError;
+      self->v_102 = error;
+      self->v_101 = kd;
+      self->v_100 = ki;
+      self->v_99 = kp;
       break;
     case Control__St_TrafficLight:
       Utilities__compare_colors_step(sens.s_front, Globals__red,
                                      &Utilities__compare_colors_out_st);
-      v_54 = Utilities__compare_colors_out_st.correlation;
+      v_59 = Utilities__compare_colors_out_st.correlation;
       tp_St_TrafficLight = self->tp_2;
       lastActionTime_St_TrafficLight = self->lastActionTime_1;
       actionIndex_St_TrafficLight = self->actionIndex_1;
       arriving_St_TrafficLight = false;
-      v_55 = (v_54<1.000000);
-      if (v_55) {
+      v_60 = (v_59<1.000000);
+      if (v_60) {
         nr_St_TrafficLight = true;
         ns_St_TrafficLight = Control__St_Running;
       } else {
@@ -697,39 +719,49 @@ void Control__controller_step(Globals__sensors sens, Globals__itielts iti,
       actionIndex_St_Turn = self->actionIndex_1;
       arriving_St_Turn = false;
       if (r) {
-        v_61 = 0;
+        v_68 = 0;
       } else {
-        v_61 = self->v_60;
+        v_68 = self->v_67;
       };
       if (true) {
-        v_59 = 1;
+        v_66 = 1;
       } else {
-        v_59 = 0;
+        v_66 = 0;
       };
-      cpt = (v_59+v_61);
+      cpt = (v_66+v_68);
       Mathext__float_step(cpt, &Mathext__float_out_st);
-      v_62 = Mathext__float_out_st.o;
-      time = (Globals__timestep*v_62);
+      v_69 = Mathext__float_out_st.o;
+      time = (Globals__timestep*v_69);
       _out->arriving = arriving_St_Turn;
       actionIndex = actionIndex_St_Turn;
+      v_70 = (actionIndex-1);
+      v_62 = (actionIndex-1);
       lastActionTime = lastActionTime_St_Turn;
       tp = tp_St_Turn;
-      v_66.right = -1500.000000;
-      v_66.left = 1500.000000;
-      v_65.right = 1500.000000;
-      v_65.left = -1500.000000;
-      v_63 = iti[between(self->actionIndex_1, Globals__itinum)];
-      v_64 = (v_63.param>0.000000);
-      if (v_64) {
-        rspeed_St_Turn = v_65;
+      v_72 = iti[between(actionIndex, Globals__itinum)];
+      v_73 = (v_72.param>0.000000);
+      v_71 = iti[between(v_70, Globals__itinum)];
+      Control__convertMsToDps_step(v_71.param,
+                                   &Control__convertMsToDps_out_st);
+      speed = Control__convertMsToDps_out_st.dps;
+      v_76 = -(speed);
+      v_74 = -(speed);
+      v_77.left = speed;
+      v_77.right = v_76;
+      v_75.left = v_74;
+      v_75.right = speed;
+      if (v_73) {
+        rspeed_St_Turn = v_75;
       } else {
-        rspeed_St_Turn = v_66;
+        rspeed_St_Turn = v_77;
       };
-      v_56 = iti[between(self->actionIndex_1, Globals__itinum)];
-      Control__getTimeAngle_step(v_56.param, &Control__getTimeAngle_out_st);
-      v_57 = Control__getTimeAngle_out_st.time;
-      v_58 = (time>v_57);
-      if (v_58) {
+      v_63 = iti[between(v_62, Globals__itinum)];
+      v_61 = iti[between(actionIndex, Globals__itinum)];
+      Control__getTimeAngle_step(v_61.param, v_63.param,
+                                 &Control__getTimeAngle_out_st);
+      v_64 = Control__getTimeAngle_out_st.time;
+      v_65 = (time>v_64);
+      if (v_65) {
         nr_St_Turn = true;
         ns_St_Turn = Control__St_Action;
       } else {
@@ -739,7 +771,7 @@ void Control__controller_step(Globals__sensors sens, Globals__itielts iti,
       ns = ns_St_Turn;
       nr = nr_St_Turn;
       _out->rspeed = rspeed_St_Turn;
-      self->v_60 = cpt;
+      self->v_67 = cpt;
       break;
     case Control__St_Arrived:
       tp_St_Arrived = self->tp_2;
@@ -766,6 +798,6 @@ void Control__controller_step(Globals__sensors sens, Globals__itielts iti,
   self->actionIndex_1 = actionIndex;
   self->pnr = nr;
   self->ck = ns;
-  self->v_52 = compt;;
+  self->v_57 = compt;;
 }
 

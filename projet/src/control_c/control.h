@@ -1,4 +1,4 @@
-/* --- Generated the 21/11/2022 at 18:42 --- */
+/* --- Generated the 21/11/2022 at 20:58 --- */
 /* --- heptagon compiler, version 1.05.00 (compiled wed. oct. 5 14:31:43 CET 2022) --- */
 /* --- Command line: /home/alex/.opam/default/bin/heptc -c -target c control.ept --- */
 
@@ -57,7 +57,7 @@ typedef struct Control__getDirection_out {
 } Control__getDirection_out;
 
 void Control__getDirection_step(float left, float mid, float right,
-                                Control__getDirection_out* _out);
+                                float action, Control__getDirection_out* _out);
 
 typedef struct Control__setSpeed_out {
   Globals__wheels rspeed;
@@ -69,7 +69,8 @@ typedef struct Control__getTimeAngle_out {
   float time;
 } Control__getTimeAngle_out;
 
-void Control__getTimeAngle_step(float deg, Control__getTimeAngle_out* _out);
+void Control__getTimeAngle_step(float deg, float ms,
+                                Control__getTimeAngle_out* _out);
 
 typedef struct Control__d_pid_out {
 } Control__d_pid_out;
@@ -120,18 +121,18 @@ void Control__calculateKd_step(float kp, float dt, float pc,
                                Control__calculateKd_out* _out);
 
 typedef struct Control__controller_mem {
-  int v_60;
-  float v_95;
-  float v_94;
-  float v_93;
-  float v_92;
-  float v_91;
-  float v_90;
-  float v_89;
-  float v_88;
-  float v_87;
+  int v_67;
+  float v_107;
+  float v_106;
+  float v_105;
+  float v_104;
+  float v_103;
+  float v_102;
+  float v_101;
+  float v_100;
+  float v_99;
   Control__st ck;
-  int v_52;
+  int v_57;
   int pnr;
   float tp_2;
   float lastActionTime_1;
