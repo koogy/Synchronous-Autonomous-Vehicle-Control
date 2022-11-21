@@ -61,12 +61,12 @@ let
   rspeed = { left = left; right = right}
 tel 
 
-fun getTimeAngle(deg : float) returns (time : float)
+fun getTimeAngle(deg, ms : float) returns (time : float)
 var circumference : float;arcLength: float;
 let
   circumference = pi *. cB ;
   arcLength = (abs(deg)/. 360.0) *. circumference; 
-  time = (arcLength/.100.0) /. 0.2399827721491243;
+  time = (arcLength/.100.0) /.(ms/.100.0) ;
 tel 
 
 fun d_pid(msg:string; left,mid,right, error,turn :float) returns ()
@@ -130,7 +130,7 @@ tel
 
 fun calculateKd(kp,dt,pc : float) returns ( kd : float)
 let
-  kd = (kp *. 2.37) /. (8.0 *. dt)
+  kd = (kp *. 2.35) /. (8.0 *. dt)
 tel
 
 
@@ -178,6 +178,7 @@ let
           (left,mid,right) = (getDistances(sens));
           error =  mid *. Mathext.float(getDirection(left,mid,right));
           integral = (2.0/.3.0)*.(last integral) +. error;
+   
           derivative = error -. lastError;
           lastError = last error;
           turn = (kp *. error) +. (ki *. integral) +. (kd *. derivative);
@@ -193,14 +194,15 @@ let
           | tLight then TrafficLight
 
     state Turn
-      var cpt : int; time: float;
+      var cpt : int; time,speed: float;
       do cpt = (if true then 1 else 0) + (0 fby cpt);
          time = timestep *. Mathext.float(cpt);
-         rspeed = if (((iti[>last actionIndex<]).param) >. 0.0) then  
-         {left = -. cMAXWHEEL; right = (cMAXWHEEL)} else 
-         {left = cMAXWHEEL; right = -. (cMAXWHEEL)};
+         speed = convertMsToDps((iti[> actionIndex -1<]).param);
+         rspeed = if (((iti[> actionIndex<]).param) >. 0.0) then  
+         {left = -. speed; right = (speed)} else 
+         {left = speed; right = -. (speed)};
          arriving = false;
-      until (time >. (getTimeAngle((iti[>( last actionIndex)<]).param))) then Action
+      until (time >. (getTimeAngle((iti[>(  actionIndex)<]).param,(iti[> actionIndex -1<]).param))) then Action
 
     state TrafficLight
       do rspeed = idlew;
