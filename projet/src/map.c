@@ -954,7 +954,7 @@ DEFINE_HEPT_FUN(Map, lookup_pos, (Globals__position pos)) {
 
 void play_asset_wav(SDL_AudioDeviceID audio_device, asset_wav_t *wav) {
   if (!audio_device) {
-    log_info("[sdl] no audio device\n");
+    //TODO log_info("[sdl] no audio device\n");
     return;
   }
 
@@ -970,18 +970,19 @@ DEFINE_HEPT_FUN(Map, soundEffects, (Globals__event evt, Globals__status sta)) {
     return;
   if (evt.exitRoad) {
     play_asset_wav(audio_device, &exit_road);
-    log_info("[audio] car left the road\n");
+    // REMOVE COMMENT LATER CTRLF TODO
+  //  log_info("[audio] car left the road\n");
   } else if (evt.collisionEvent) {
     play_asset_wav(audio_device, &collision);
-    log_info("[audio] car has collided with an obstacle\n");
+   // log_info("[audio] car has collided with an obstacle\n");
   } else if (evt.dirEvent) {
     play_asset_wav(audio_device, &wrong_dir);
-    log_info("[audio] car goes in the wrong direction\n");
+  //  log_info("[audio] car goes in the wrong direction\n");
   } else if (evt.lightRun) {
     play_asset_wav(audio_device, &light_run);
-    log_info("[audio] car has run a red light\n");
+  //  log_info("[audio] car has run a red light\n");
   } else if (evt.speedExcess) {
     play_asset_wav(audio_device, &speed_excess);
-    log_info("[audio] car is going too fast\n");
+   // log_info("[audio] car is going too fast\n");
   }
 }

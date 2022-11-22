@@ -1,5 +1,5 @@
-/* --- Generated the 21/11/2022 at 21:57 --- */
-/* --- heptagon compiler, version 1.05.00 (compiled wed. oct. 5 14:31:43 CET 2022) --- */
+/* --- Generated the 22/11/2022 at 16:16 --- */
+/* --- heptagon compiler, version 1.05.00 (compiled tue. nov. 22 1:0:13 CET 2022) --- */
 /* --- Command line: /home/alex/.opam/default/bin/heptc -c -target c control.ept --- */
 
 #ifndef CONTROL_H
@@ -57,7 +57,8 @@ typedef struct Control__getDirection_out {
 } Control__getDirection_out;
 
 void Control__getDirection_step(float left, float mid, float right,
-                                float action, Control__getDirection_out* _out);
+                                float action, float obs,
+                                Control__getDirection_out* _out);
 
 typedef struct Control__setSpeed_out {
   Globals__wheels rspeed;
@@ -121,18 +122,18 @@ void Control__calculateKd_step(float kp, float dt, float pc,
                                Control__calculateKd_out* _out);
 
 typedef struct Control__controller_mem {
-  int v_67;
+  int v_70;
+  float v_111;
+  float v_110;
+  float v_109;
+  float v_108;
   float v_107;
   float v_106;
   float v_105;
   float v_104;
   float v_103;
-  float v_102;
-  float v_101;
-  float v_100;
-  float v_99;
   Control__st ck;
-  int v_57;
+  int v_60;
   int pnr;
   float tp_2;
   float lastActionTime_1;

@@ -43,12 +43,12 @@ let
   right = compare_colors(sens.s_road, magenta)
 tel
 
-fun getDirection(left,mid,right, action: float) returns ( direction : int)
+fun getDirection(left,mid,right, action, obs: float) returns ( direction : int)
 var min :float;
 let
   min = min_float(min_float(left,mid),min_float(action,right));
   direction = if (min = left) then 1
-              else if (min = mid or min = action ) then 0
+              else if (min = mid or min = action or min = obs) then 0
               else if (min = right ) then -1
               else 0;
 tel 
@@ -147,6 +147,7 @@ let
          arriving = false;
          actionIndex =  (last actionIndex +1);
          act = ((iti[>actionIndex<]).act);
+       (*   () = dbg_action("ACTION", act); *)
      
       until (act = Turn) then Turn
             | (act = Go) then Running
@@ -175,7 +176,7 @@ let
           kd = calculateKd(kp,dt,pc);
 
           (left,mid,right) = (getDistances(sens));
-          error =  mid *. Mathext.float(getDirection(left,mid,right, compare_colors(sens.s_road,green)));
+          error =  mid *. Mathext.float(getDirection(left,mid,right, compare_colors(sens.s_road,green),compare_colors(sens.s_road,blue)));
           integral = (2.0/.3.0)*.(last integral) +. error;
    
           derivative = error -. lastError;
@@ -187,7 +188,7 @@ let
           actionMark = if ((Utilities.compare_colors(sens.s_road, green) >=. 1.0) and ((timez -. lastActionTime) >. 0.5)) then true else false;
           tLight = if (Utilities.compare_colors(sens.s_front, red) >=. 1.0) then true else false;
           arriving = false;
-          () = dbg_sensors("SENSOR", sens);
+          () = dbg_sensors("sensor", sens);
 
       until (actionMark) then Action 
           | tLight then TrafficLight
