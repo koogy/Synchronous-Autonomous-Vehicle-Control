@@ -39,7 +39,7 @@ let
   blue = Mathext.int((Mathext.float(cyan.blue) *. ratioL) +. (Mathext.float(blue.blue) *. ratioR)) };
   
   left = compare_colors(sens.s_road, cyan) ;
-  mid = compare_colors(sens.s_road, targetColor);
+  mid = compare_colors(sens.s_road, blue);
   right = compare_colors(sens.s_road, magenta)
 tel
 
@@ -131,7 +131,6 @@ let
   kd = (kp *. 2.35) /. (8.0 *. dt)
 tel
 
-
 node controller(sens : sensors; iti : itielts)
        returns (rspeed : wheels; arriving : bool)
 var compt : int; timez: float; last actionIndex: int = -1; last lastActionTime: float = 0.0;  last tp: float = 0.0;
@@ -152,8 +151,7 @@ let
       until (act = Turn) then Turn
             | (act = Go) then Running
             | (act = Stop) then Arrived 
-            
-
+          
     state Running 
       var actionMark,tLight: bool;
       left,mid,right,
@@ -169,26 +167,41 @@ let
       last dt : float = 0.0;
       do  
           dt = 0.016; (* 16 ms/cycle *)
-          pc = 2.37; (* oscillation 2.37 sec *)
-          
-          kp = calculateKp(0.775);
+          pc = 2.37; (* stable oscillation 2.37 sec  for 20ms*)
+           (* stable oscillation 4.22 sec  for 10ms*)
+           (* stable oscillation 1.71 sec  for 10ms*)
+          (* 20 ms , kp value = 0.775 D*)
+          (* 30 ms , kp value = 0.9*)
+          kp = calculateKp(0.7);
           ki = calculateKi(kp,dt,pc) ;
           kd = calculateKd(kp,dt,pc);
 
           (left,mid,right) = (getDistances(sens));
-          error =  mid *. Mathext.float(getDirection(left,mid,right, compare_colors(sens.s_road,green),compare_colors(sens.s_road,blue)));
-          integral = (2.0/.3.0)*.(last integral) +. error;
-   
-          derivative = error -. lastError;
+          error = if (compare_colors(sens.s_road,green) >=. 1.0) then mid *. Mathext.float(getDirection(left,mid,right, compare_colors(sens.s_road,green),compare_colors(sens.s_road,blue))) else last error;
+         
+          integral = if (compare_colors(sens.s_road,green) >=. 1.0) then 
+          (2.0/.3.0)*.(last integral) +. error
+          else last integral;
+
+          derivative = if (compare_colors(sens.s_road,green) >=. 1.0) then 
+          error -. lastError
+          else last derivative;
+               
           lastError = last error;
+
           turn = (kp *. error) +. (ki *. integral) +. (kd *. derivative);
+            
+
+
+
+          () = Trace.trace_float("ERROR",error);
+          () = Trace.trace_float("TIME",timez);
 
           tp =  if (((iti[>actionIndex<]).act)= Go) then  convertMsToDps((iti[>actionIndex<]).param) else last tp;
           rspeed = setSpeed(turn,tp);
           actionMark = if ((Utilities.compare_colors(sens.s_road, green) >=. 1.0) and ((timez -. lastActionTime) >. 0.5)) then true else false;
           tLight = if (Utilities.compare_colors(sens.s_front, red) >=. 1.0) then true else false;
           arriving = false;
-          () = dbg_sensors("sensor", sens);
 
       until (actionMark) then Action 
           | tLight then TrafficLight

@@ -1,4 +1,4 @@
-/* --- Generated the 22/11/2022 at 16:16 --- */
+/* --- Generated the 23/11/2022 at 19:15 --- */
 /* --- heptagon compiler, version 1.05.00 (compiled tue. nov. 22 1:0:13 CET 2022) --- */
 /* --- Command line: /home/alex/.opam/default/bin/heptc -c -target c control.ept --- */
 
@@ -9,6 +9,7 @@
 #include "debug.h"
 #include "globals.h"
 #include "mathext.h"
+#include "trace.h"
 #include "utilities.h"
 typedef struct Control__convertMsToRpm_out {
   float rpm;
@@ -122,22 +123,24 @@ void Control__calculateKd_step(float kp, float dt, float pc,
                                Control__calculateKd_out* _out);
 
 typedef struct Control__controller_mem {
-  int v_70;
-  float v_111;
-  float v_110;
-  float v_109;
-  float v_108;
-  float v_107;
-  float v_106;
-  float v_105;
-  float v_104;
-  float v_103;
+  int v_73;
+  float v_123;
+  float v_122;
+  float v_121;
+  float v_120;
+  float v_119;
+  float v_118;
+  float v_117;
+  float v_116;
+  float v_115;
   Control__st ck;
-  int v_60;
+  int v_63;
   int pnr;
   float tp_2;
   float lastActionTime_1;
   int actionIndex_1;
+  Trace__trace_float_mem trace_float_1;
+  Trace__trace_float_mem trace_float;
 } Control__controller_mem;
 
 typedef struct Control__controller_out {

@@ -1,24 +1,25 @@
 [log] logging to logs.txt
-[map assets/07.map] read map: roundabout_tl
-[map assets/07.map] read graphics: map_07_roundabout_tl.bmp
-[map assets/07.map] read guide: b-07.bmp
-[map assets/07.map] read init: x = 60.000000, y = 150.000000, head = 0.000000
-[map assets/07.map] starting to read segment rd of size 10
-[map assets/07.map] finished reading segment rd
-[map assets/07.map] starting to read segment wp of size 11
-[map assets/07.map] finished reading segment wp
-[map assets/07.map] starting to read segment tl of size 4
-[map assets/07.map] finished reading segment tl
-[map assets/07.map] starting to read segment st of size 4
-[map assets/07.map] finished reading segment st
-[map assets/07.map] starting to read segment obst of size 0
-[map assets/07.map] finished reading segment obst
-[map assets/07.map] starting to read segment iti of size 12
-[map assets/07.map] finished reading segment iti
-[sdl] loaded texture b-07.bmp
+[map assets/09.map] read map: paris
+[map assets/09.map] read graphics: map_09_paris.bmp
+[map assets/09.map] read guide: b-09.bmp
+[map assets/09.map] read init: x = 40.000000, y = 275.000000, head = 0.000000
+[map assets/09.map] starting to read segment rd of size 31
+[map assets/09.map] finished reading segment rd
+[map assets/09.map] starting to read segment wp of size 32
+[map assets/09.map] finished reading segment wp
+[map assets/09.map] starting to read segment tl of size 6
+[map assets/09.map] finished reading segment tl
+[map assets/09.map] starting to read segment st of size 6
+[map assets/09.map] finished reading segment st
+[map assets/09.map] starting to read segment obst of size 0
+[map assets/09.map] finished reading segment obst
+[map assets/09.map] starting to read segment iti of size 14
+[map assets/09.map] finished reading segment iti
+[sdl] loaded texture b-09.bmp
 [sdl] loaded texture orange.bmp
 [sdl] loaded texture obst.bmp
 [simulation] starting (16 ms/cycle)
-[simulation 00002962] shutting down, score = 10000, time = 0.000000
-[simulation] race quit before finishing
+[simulation 00005178] race finished
+[simulation 00005178] shutting down, score = 49040, time = 50.629997
+[simulation] race succeeded
 [log] shutting down, closing logs.txt
