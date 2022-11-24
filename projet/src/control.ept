@@ -172,9 +172,10 @@ let
            (* stable oscillation 1.71 sec  for 10ms*)
           (* 20 ms , kp value = 0.775 D*)
           (* 30 ms , kp value = 0.9*)
-          kp = calculateKp(1.0);
-          ki = 0.0 ;
-          kd = 0.0;
+          kp = calculateKp(0.7);
+          ki = calculateKi(kp,dt,pc) ;
+          kd = calculateKd(kp,dt,pc);
+
 
           (left,mid,right) = (getDistances(sens));
           error = if (compare_colors(sens.s_road,green) >=. 1.0) then mid *. Mathext.float(getDirection(left,mid,right, compare_colors(sens.s_road,red))) else last error;
