@@ -19,7 +19,6 @@
 [sdl] loaded texture orange.bmp
 [sdl] loaded texture obst.bmp
 [simulation] starting (16 ms/cycle)
-[simulation 00005178] race finished
-[simulation 00005178] shutting down, score = 49040, time = 50.629997
-[simulation] race succeeded
+[simulation 00000393] shutting down, score = 10000, time = 0.000000
+[simulation] race quit before finishing
 [log] shutting down, closing logs.txt

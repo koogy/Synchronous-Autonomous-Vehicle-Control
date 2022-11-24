@@ -88,15 +88,15 @@ st 6
 obst 0
 
 iti 14
-go 20.
-go 20.
-go 20.
-go 20.
+go 40.
+go 40.
+go 40.
+go 40.
 turn -90.
-go 10.
-go 20.
+go 40.
+go 40.
 turn -90.
-go 10.
+go 40.
 turn 30.
 go 20.
 turn 100.

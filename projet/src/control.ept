@@ -43,12 +43,12 @@ let
   right = compare_colors(sens.s_road, magenta)
 tel
 
-fun getDirection(left,mid,right, action, obs: float) returns ( direction : int)
+fun getDirection(left,mid,right, action : float) returns ( direction : int)
 var min :float;
 let
   min = min_float(min_float(left,mid),min_float(action,right));
   direction = if (min = left) then 1
-              else if (min = mid or min = action or min = obs) then 0
+              else if (min = mid ) then 0
               else if (min = right ) then -1
               else 0;
 tel 
@@ -177,7 +177,7 @@ let
           kd = calculateKd(kp,dt,pc);
 
           (left,mid,right) = (getDistances(sens));
-          error = if (compare_colors(sens.s_road,green) >=. 1.0) then mid *. Mathext.float(getDirection(left,mid,right, compare_colors(sens.s_road,green),compare_colors(sens.s_road,blue))) else last error;
+          error = if (compare_colors(sens.s_road,green) >=. 1.0) then mid *. Mathext.float(getDirection(left,mid,right, compare_colors(sens.s_road,red))) else last error;
          
           integral = if (compare_colors(sens.s_road,green) >=. 1.0) then 
           (2.0/.3.0)*.(last integral) +. error
@@ -188,6 +188,8 @@ let
           else last derivative;
                
           lastError = last error;
+
+          () = dbg_sensors("SENSOR",sens);
 
           turn = (kp *. error) +. (ki *. integral) +. (kd *. derivative);
             
