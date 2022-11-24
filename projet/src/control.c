@@ -1,5 +1,5 @@
-/* --- Generated the 24/11/2022 at 10:30 --- */
-/* --- heptagon compiler, version 1.05.00 (compiled tue. nov. 22 1:37:53 CET 2022) --- */
+/* --- Generated the 24/11/2022 at 17:41 --- */
+/* --- heptagon compiler, version 1.05.00 (compiled tue. nov. 22 1:0:13 CET 2022) --- */
 /* --- Command line: /home/alex/.opam/default/bin/heptc -c -target c control.ept --- */
 
 #include <stdio.h>
@@ -360,15 +360,15 @@ void Control__calculateKd_step(float kp, float dt, float pc,
 void Control__controller_reset(Control__controller_mem* self) {
   Trace__trace_float_reset(&self->trace_float);
   Trace__trace_float_reset(&self->trace_float_1);
+  self->v_121 = 0.000000;
+  self->v_120 = 0.000000;
+  self->v_119 = 0.000000;
+  self->v_118 = 0.000000;
   self->v_117 = 0.000000;
   self->v_116 = 0.000000;
   self->v_115 = 0.000000;
   self->v_114 = 0.000000;
   self->v_113 = 0.000000;
-  self->v_112 = 0.000000;
-  self->v_111 = 0.000000;
-  self->v_110 = 0.000000;
-  self->v_109 = 0.000000;
   self->v_68 = 0;
   self->tp_2 = 0.000000;
   self->lastActionTime_1 = 0.000000;
@@ -416,36 +416,40 @@ void Control__controller_step(Globals__sensors sens, Globals__itielts iti,
   int cpt;
   float time;
   float speed;
+  int v_79;
+  int v_112;
+  int v_111;
+  float v_110;
+  int v_109;
   int v_108;
   float v_107;
   int v_106;
-  int v_105;
+  float v_105;
   float v_104;
-  int v_103;
-  float v_102;
-  float v_101;
-  Globals__itielt v_100;
-  int v_99;
-  Globals__itielt v_98;
+  Globals__itielt v_103;
+  int v_102;
+  Globals__itielt v_101;
+  float v_100;
+  float v_99;
+  float v_98;
   float v_97;
   float v_96;
-  float v_95;
+  int v_95;
   float v_94;
   float v_93;
-  int v_92;
-  float v_91;
+  float v_92;
+  int v_91;
   float v_90;
   float v_89;
-  int v_88;
-  float v_87;
+  float v_88;
+  int v_87;
   float v_86;
-  float v_85;
-  int v_84;
-  float v_83;
-  int v_82;
-  float v_81;
-  int v_80;
-  Control__st v_79;
+  int v_85;
+  float v_84;
+  int v_83;
+  Control__st v_82;
+  int v_81;
+  Control__st v_80;
   int r_2;
   int r_1;
   float dt_3;
@@ -459,6 +463,7 @@ void Control__controller_step(Globals__sensors sens, Globals__itielts iti,
   float kp_4;
   int actionMark;
   int tLight;
+  int isObstacle;
   float left;
   float mid;
   float right;
@@ -472,14 +477,14 @@ void Control__controller_step(Globals__sensors sens, Globals__itielts iti,
   float derivative;
   float pc;
   float dt;
-  Globals__itielt v_125;
+  Globals__itielt v_129;
+  int v_128;
+  Control__st v_127;
+  int v_126;
+  Control__st v_125;
   int v_124;
-  Control__st v_123;
+  int v_123;
   int v_122;
-  Control__st v_121;
-  int v_120;
-  int v_119;
-  int v_118;
   Globals__action act;
   int nr_St_Arrived;
   Control__st ns_St_Arrived;
@@ -502,6 +507,13 @@ void Control__controller_step(Globals__sensors sens, Globals__itielts iti,
   int actionIndex_St_Turn;
   int arriving_St_Turn;
   Globals__wheels rspeed_St_Turn;
+  int nr_St_Obstacle;
+  Control__st ns_St_Obstacle;
+  float tp_St_Obstacle;
+  float lastActionTime_St_Obstacle;
+  int actionIndex_St_Obstacle;
+  int arriving_St_Obstacle;
+  Globals__wheels rspeed_St_Obstacle;
   int nr_St_Running;
   Control__st ns_St_Running;
   float tp_St_Running;
@@ -545,31 +557,31 @@ void Control__controller_step(Globals__sensors sens, Globals__itielts iti,
       _out->arriving = arriving_St_Action;
       actionIndex = actionIndex_St_Action;
       lastActionTime = lastActionTime_St_Action;
-      v_125 = iti[between(actionIndex, Globals__itinum)];
-      act = v_125.act;
-      v_120 = (act==Globals__Stop);
-      if (v_120) {
-        v_122 = true;
-        v_121 = Control__St_Arrived;
+      v_129 = iti[between(actionIndex, Globals__itinum)];
+      act = v_129.act;
+      v_124 = (act==Globals__Stop);
+      if (v_124) {
+        v_126 = true;
+        v_125 = Control__St_Arrived;
       } else {
-        v_122 = false;
-        v_121 = Control__St_Action;
+        v_126 = false;
+        v_125 = Control__St_Action;
       };
-      v_119 = (act==Globals__Go);
-      if (v_119) {
-        v_124 = true;
-        v_123 = Control__St_Running;
+      v_123 = (act==Globals__Go);
+      if (v_123) {
+        v_128 = true;
+        v_127 = Control__St_Running;
       } else {
-        v_124 = v_122;
-        v_123 = v_121;
+        v_128 = v_126;
+        v_127 = v_125;
       };
-      v_118 = (act==Globals__Turn);
-      if (v_118) {
+      v_122 = (act==Globals__Turn);
+      if (v_122) {
         nr_St_Action = true;
         ns_St_Action = Control__St_Turn;
       } else {
-        nr_St_Action = v_124;
-        ns_St_Action = v_123;
+        nr_St_Action = v_128;
+        ns_St_Action = v_127;
       };
       rspeed_St_Action.right = 0.000000;
       rspeed_St_Action.left = 0.000000;
@@ -590,96 +602,115 @@ void Control__controller_step(Globals__sensors sens, Globals__itielts iti,
         ki_2 = 0.000000;
         kp_4 = 0.000000;
       } else {
-        dt_3 = self->v_117;
-        pc_3 = self->v_116;
-        derivative_1 = self->v_115;
-        integral_1 = self->v_114;
-        lastError_1 = self->v_113;
-        error_1 = self->v_112;
-        kd_2 = self->v_111;
-        ki_2 = self->v_110;
-        kp_4 = self->v_109;
+        dt_3 = self->v_121;
+        pc_3 = self->v_120;
+        derivative_1 = self->v_119;
+        integral_1 = self->v_118;
+        lastError_1 = self->v_117;
+        error_1 = self->v_116;
+        kd_2 = self->v_115;
+        ki_2 = self->v_114;
+        kp_4 = self->v_113;
       };
       lastActionTime_St_Running = self->lastActionTime_1;
       actionIndex_St_Running = self->actionIndex_1;
       arriving_St_Running = false;
+      v_112 = (sens.s_sonar<=10);
+      if (v_112) {
+        isObstacle = true;
+      } else {
+        isObstacle = false;
+      };
       Utilities__compare_colors_step(sens.s_front, Globals__red,
                                      &Utilities__compare_colors_out_st);
-      v_107 = Utilities__compare_colors_out_st.correlation;
-      v_108 = (v_107>=1.000000);
-      if (v_108) {
+      v_110 = Utilities__compare_colors_out_st.correlation;
+      v_111 = (v_110>=1.000000);
+      if (v_111) {
         tLight = true;
       } else {
         tLight = false;
       };
       Utilities__compare_colors_step(sens.s_road, Globals__green,
                                      &Utilities__compare_colors_out_st);
-      v_102 = Utilities__compare_colors_out_st.correlation;
-      v_103 = (v_102>=1.000000);
+      v_105 = Utilities__compare_colors_out_st.correlation;
+      v_106 = (v_105>=1.000000);
       Globals__dbg_sensors_step("SENSOR", sens, &Globals__dbg_sensors_out_st);
       lastError = error_1;
       Control__compare_colors_step(sens.s_road, Globals__green,
                                    &Control__compare_colors_out_st);
-      v_91 = Control__compare_colors_out_st.v;
-      v_92 = (v_91>=1.000000);
-      v_89 = (0.666667*integral_1);
+      v_94 = Control__compare_colors_out_st.v;
+      v_95 = (v_94>=1.000000);
+      v_92 = (0.666667*integral_1);
       Control__compare_colors_step(sens.s_road, Globals__green,
                                    &Control__compare_colors_out_st);
-      v_87 = Control__compare_colors_out_st.v;
-      v_88 = (v_87>=1.000000);
+      v_90 = Control__compare_colors_out_st.v;
+      v_91 = (v_90>=1.000000);
       Control__compare_colors_step(sens.s_road, Globals__red,
                                    &Control__compare_colors_out_st);
-      v_83 = Control__compare_colors_out_st.v;
+      v_86 = Control__compare_colors_out_st.v;
       Control__compare_colors_step(sens.s_road, Globals__green,
                                    &Control__compare_colors_out_st);
-      v_81 = Control__compare_colors_out_st.v;
-      v_82 = (v_81>=1.000000);
+      v_84 = Control__compare_colors_out_st.v;
+      v_85 = (v_84>=1.000000);
       Control__getDistances_step(sens, &Control__getDistances_out_st);
       left = Control__getDistances_out_st.left;
       mid = Control__getDistances_out_st.mid;
       right = Control__getDistances_out_st.right;
-      Control__getDirection_step(left, mid, right, v_83,
+      Control__getDirection_step(left, mid, right, v_86,
                                  &Control__getDirection_out_st);
-      v_84 = Control__getDirection_out_st.direction;
-      Mathext__float_step(v_84, &Mathext__float_out_st);
-      v_85 = Mathext__float_out_st.o;
-      v_86 = (mid*v_85);
-      if (v_82) {
-        error = v_86;
+      v_87 = Control__getDirection_out_st.direction;
+      Mathext__float_step(v_87, &Mathext__float_out_st);
+      v_88 = Mathext__float_out_st.o;
+      v_89 = (mid*v_88);
+      if (v_85) {
+        error = v_89;
       } else {
         error = error_1;
       };
-      v_93 = (error-lastError);
-      if (v_92) {
-        derivative = v_93;
+      v_96 = (error-lastError);
+      if (v_95) {
+        derivative = v_96;
       } else {
         derivative = derivative_1;
       };
-      v_90 = (v_89+error);
-      if (v_88) {
-        integral = v_90;
+      v_93 = (v_92+error);
+      if (v_91) {
+        integral = v_93;
       } else {
         integral = integral_1;
       };
       Control__calculateKp_step(0.700000, &Control__calculateKp_out_st);
       kp = Control__calculateKp_out_st.kp;
-      v_94 = (kp*error);
+      v_97 = (kp*error);
       pc = 2.370000;
       dt = 0.016000;
       Control__calculateKd_step(kp, dt, pc, &Control__calculateKd_out_st);
       kd = Control__calculateKd_out_st.kd;
-      v_97 = (kd*derivative);
+      v_100 = (kd*derivative);
       Control__calculateKi_step(kp, dt, pc, &Control__calculateKi_out_st);
       ki = Control__calculateKi_out_st.ki;
-      v_95 = (ki*integral);
-      v_96 = (v_94+v_95);
-      turn = (v_96+v_97);
-      if (tLight) {
-        v_80 = true;
-        v_79 = Control__St_TrafficLight;
+      v_98 = (ki*integral);
+      v_99 = (v_97+v_98);
+      turn = (v_99+v_100);
+      if (isObstacle) {
+        v_81 = true;
       } else {
-        v_80 = false;
-        v_79 = Control__St_Running;
+        v_81 = false;
+      };
+      if (tLight) {
+        v_83 = true;
+      } else {
+        v_83 = v_81;
+      };
+      if (isObstacle) {
+        v_80 = Control__St_Obstacle;
+      } else {
+        v_80 = Control__St_Running;
+      };
+      if (tLight) {
+        v_82 = Control__St_TrafficLight;
+      } else {
+        v_82 = v_80;
       };
       r_1 = r;
       if (r_1) {
@@ -696,10 +727,10 @@ void Control__controller_step(Globals__sensors sens, Globals__itielts iti,
       _out->arriving = arriving_St_Running;
       actionIndex = actionIndex_St_Running;
       lastActionTime = lastActionTime_St_Running;
-      v_104 = (timez-lastActionTime);
-      v_105 = (v_104>0.500000);
-      v_106 = (v_103&&v_105);
-      if (v_106) {
+      v_107 = (timez-lastActionTime);
+      v_108 = (v_107>0.500000);
+      v_109 = (v_106&&v_108);
+      if (v_109) {
         actionMark = true;
       } else {
         actionMark = false;
@@ -708,17 +739,17 @@ void Control__controller_step(Globals__sensors sens, Globals__itielts iti,
         nr_St_Running = true;
         ns_St_Running = Control__St_Action;
       } else {
-        nr_St_Running = v_80;
-        ns_St_Running = v_79;
+        nr_St_Running = v_83;
+        ns_St_Running = v_82;
       };
-      v_100 = iti[between(actionIndex, Globals__itinum)];
-      Control__convertMsToDps_step(v_100.param,
+      v_103 = iti[between(actionIndex, Globals__itinum)];
+      Control__convertMsToDps_step(v_103.param,
                                    &Control__convertMsToDps_out_st);
-      v_101 = Control__convertMsToDps_out_st.dps;
-      v_98 = iti[between(actionIndex, Globals__itinum)];
-      v_99 = (v_98.act==Globals__Go);
-      if (v_99) {
-        tp_St_Running = v_101;
+      v_104 = Control__convertMsToDps_out_st.dps;
+      v_101 = iti[between(actionIndex, Globals__itinum)];
+      v_102 = (v_101.act==Globals__Go);
+      if (v_102) {
+        tp_St_Running = v_104;
       } else {
         tp_St_Running = self->tp_2;
       };
@@ -728,15 +759,38 @@ void Control__controller_step(Globals__sensors sens, Globals__itielts iti,
       ns = ns_St_Running;
       nr = nr_St_Running;
       _out->rspeed = rspeed_St_Running;
-      self->v_117 = dt;
-      self->v_116 = pc;
-      self->v_115 = derivative;
-      self->v_114 = integral;
-      self->v_113 = lastError;
-      self->v_112 = error;
-      self->v_111 = kd;
-      self->v_110 = ki;
-      self->v_109 = kp;
+      self->v_121 = dt;
+      self->v_120 = pc;
+      self->v_119 = derivative;
+      self->v_118 = integral;
+      self->v_117 = lastError;
+      self->v_116 = error;
+      self->v_115 = kd;
+      self->v_114 = ki;
+      self->v_113 = kp;
+      break;
+    case Control__St_Obstacle:
+      tp_St_Obstacle = self->tp_2;
+      lastActionTime_St_Obstacle = self->lastActionTime_1;
+      actionIndex_St_Obstacle = self->actionIndex_1;
+      arriving_St_Obstacle = false;
+      v_79 = (sens.s_sonar>0);
+      if (v_79) {
+        nr_St_Obstacle = true;
+        ns_St_Obstacle = Control__St_Running;
+      } else {
+        nr_St_Obstacle = false;
+        ns_St_Obstacle = Control__St_Obstacle;
+      };
+      _out->arriving = arriving_St_Obstacle;
+      actionIndex = actionIndex_St_Obstacle;
+      lastActionTime = lastActionTime_St_Obstacle;
+      tp = tp_St_Obstacle;
+      rspeed_St_Obstacle.right = 0.000000;
+      rspeed_St_Obstacle.left = 0.000000;
+      ns = ns_St_Obstacle;
+      nr = nr_St_Obstacle;
+      _out->rspeed = rspeed_St_Obstacle;
       break;
     case Control__St_TrafficLight:
       Utilities__compare_colors_step(sens.s_front, Globals__red,

@@ -153,7 +153,7 @@ let
             | (act = Stop) then Arrived 
           
     state Running 
-      var actionMark,tLight: bool;
+      var actionMark,tLight,isObstacle: bool;
       left,mid,right,
       turn: float; 
       last kp : float = 0.0;
@@ -192,9 +192,6 @@ let
           () = dbg_sensors("SENSOR",sens);
 
           turn = (kp *. error) +. (ki *. integral) +. (kd *. derivative);
-            
-
-
 
           () = Trace.trace_float("ERROR",error);
           () = Trace.trace_float("TIME",timez);
@@ -203,10 +200,17 @@ let
           rspeed = setSpeed(turn,tp);
           actionMark = if ((Utilities.compare_colors(sens.s_road, green) >=. 1.0) and ((timez -. lastActionTime) >. 0.5)) then true else false;
           tLight = if (Utilities.compare_colors(sens.s_front, red) >=. 1.0) then true else false;
+          isObstacle = if(sens.s_sonar <= 10) then true else false;
           arriving = false;
 
       until (actionMark) then Action 
           | tLight then TrafficLight
+          | isObstacle then Obstacle
+
+    state Obstacle
+        do rspeed= idlew;
+          arriving = false;
+        until ( sens.s_sonar > 0 ) then Running
 
     state Turn
       var cpt : int; time,speed: float;

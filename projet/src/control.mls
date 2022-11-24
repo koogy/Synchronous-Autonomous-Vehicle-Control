@@ -1,6 +1,6 @@
 open Globals
 open Utilities
-type st = St_Turn|St_TrafficLight|St_Running|St_Arrived|St_Action
+type st = St_Turn|St_TrafficLight|St_Running|St_Obstacle|St_Arrived|St_Action
 const ratioL = 0.500000
 const ratioR = (1.000000 -. ratioL)
 node convertMsToRpm(ms : float) returns (rpm : float)
@@ -213,6 +213,9 @@ var tp : float; lastActionTime : float; actionIndex : int; timez : float;
     rspeed_St_Running : Globals.wheels; arriving_St_Running : bool;
     actionIndex_St_Running : int; lastActionTime_St_Running : float;
     tp_St_Running : float; ns_St_Running : st; nr_St_Running : bool;
+    rspeed_St_Obstacle : Globals.wheels; arriving_St_Obstacle : bool;
+    actionIndex_St_Obstacle : int; lastActionTime_St_Obstacle : float;
+    tp_St_Obstacle : float; ns_St_Obstacle : st; nr_St_Obstacle : bool;
     rspeed_St_Turn : Globals.wheels; arriving_St_Turn : bool;
     actionIndex_St_Turn : int; lastActionTime_St_Turn : float;
     tp_St_Turn : float; ns_St_Turn : st; nr_St_Turn : bool;
@@ -223,28 +226,29 @@ var tp : float; lastActionTime : float; actionIndex : int; timez : float;
     rspeed_St_Arrived : Globals.wheels; arriving_St_Arrived : bool;
     actionIndex_St_Arrived : int; lastActionTime_St_Arrived : float;
     tp_St_Arrived : float; ns_St_Arrived : st; nr_St_Arrived : bool;
-    act : Globals.action; v_118 : bool; v_119 : bool; v_120 : bool;
-    v_121 : st; v_122 : bool; v_123 : st; v_124 : bool;
-    v_125 : Globals.itielt; dt : float; pc : float; derivative : float;
+    act : Globals.action; v_122 : bool; v_123 : bool; v_124 : bool;
+    v_125 : st; v_126 : bool; v_127 : st; v_128 : bool;
+    v_129 : Globals.itielt; dt : float; pc : float; derivative : float;
     integral : float; lastError : float; error : float; kd : float;
     ki : float; kp : float; turn : float; right : float; mid : float;
-    left : float; tLight : bool; actionMark : bool; kp_4 : float;
-    ki_2 : float; kd_2 : float; error_1 : float; lastError_1 : float;
-    integral_1 : float; derivative_1 : float; pc_3 : float; dt_3 : float;
-    r_1 : bool; r_2 : bool; v_79 : st; v_80 : bool; v_81 : float;
-    v_82 : bool; v_83 : float; v_84 : int; v_85 : float; v_86 : float;
-    v_87 : float; v_88 : bool; v_89 : float; v_90 : float; v_91 : float;
-    v_92 : bool; v_93 : float; v_94 : float; v_95 : float; v_96 : float;
-    v_97 : float; v_98 : Globals.itielt; v_99 : bool; v_100 : Globals.itielt;
-    v_101 : float; v_102 : float; v_103 : bool; v_104 : float; v_105 : bool;
-    v_106 : bool; v_107 : float; v_108 : bool; v_109 : float; v_110 : float;
-    v_111 : float; v_112 : float; v_113 : float; v_114 : float;
-    v_115 : float; v_116 : float; v_117 : float; speed : float; time : float;
-    cpt : int; v_62 : Globals.itielt; v_63 : int; v_64 : Globals.itielt;
-    v_65 : float; v_66 : bool; v_67 : int; v_68 : int; v_69 : int;
-    v_70 : float; v_71 : int; v_72 : Globals.itielt; v_73 : Globals.itielt;
-    v_74 : bool; v_75 : float; v_76 : Globals.wheels; v_77 : float;
-    v_78 : Globals.wheels; v_60 : float; v_61 : bool;
+    left : float; isObstacle : bool; tLight : bool; actionMark : bool;
+    kp_4 : float; ki_2 : float; kd_2 : float; error_1 : float;
+    lastError_1 : float; integral_1 : float; derivative_1 : float;
+    pc_3 : float; dt_3 : float; r_1 : bool; r_2 : bool; v_80 : st;
+    v_81 : bool; v_82 : st; v_83 : bool; v_84 : float; v_85 : bool;
+    v_86 : float; v_87 : int; v_88 : float; v_89 : float; v_90 : float;
+    v_91 : bool; v_92 : float; v_93 : float; v_94 : float; v_95 : bool;
+    v_96 : float; v_97 : float; v_98 : float; v_99 : float; v_100 : float;
+    v_101 : Globals.itielt; v_102 : bool; v_103 : Globals.itielt;
+    v_104 : float; v_105 : float; v_106 : bool; v_107 : float; v_108 : bool;
+    v_109 : bool; v_110 : float; v_111 : bool; v_112 : bool; v_113 : float;
+    v_114 : float; v_115 : float; v_116 : float; v_117 : float;
+    v_118 : float; v_119 : float; v_120 : float; v_121 : float; v_79 : bool;
+    speed : float; time : float; cpt : int; v_62 : Globals.itielt;
+    v_63 : int; v_64 : Globals.itielt; v_65 : float; v_66 : bool; v_67 : int;
+    v_68 : int; v_69 : int; v_70 : float; v_71 : int; v_72 : Globals.itielt;
+    v_73 : Globals.itielt; v_74 : bool; v_75 : float; v_76 : Globals.wheels;
+    v_77 : float; v_78 : Globals.wheels; v_60 : float; v_61 : bool;
 let
   tp_2 = 0.000000 fby tp;
   lastActionTime_1 = 0.000000 fby lastActionTime;
@@ -253,90 +257,92 @@ let
   pnr = false fby nr;
   ck = St_Action fby ns;
   tp_St_Action = (tp_2 when St_Action(ck));
-  act = v_125.Globals.act;
-  v_125 = (iti when St_Action(ck))[>(actionIndex when St_Action(ck))<];
+  act = v_129.Globals.act;
+  v_129 = (iti when St_Action(ck))[>(actionIndex when St_Action(ck))<];
   actionIndex_St_Action = ((actionIndex_1 when St_Action(ck)) + 1);
   arriving_St_Action = false;
   rspeed_St_Action = Globals.idlew;
   lastActionTime_St_Action = (timez when St_Action(ck));
-  nr_St_Action = if v_118 then true else v_124;
-  ns_St_Action = if v_118 then St_Turn else v_123;
-  v_124 = if v_119 then true else v_122;
-  v_123 = if v_119 then St_Running else v_121;
-  v_122 = if v_120 then true else false;
-  v_121 = if v_120 then St_Arrived else St_Action;
-  v_120 = (act = Globals.Stop);
-  v_119 = (act = Globals.Go);
-  v_118 = (act = Globals.Turn);
-  dt_3 = if (r when St_Running(ck)) then 0.000000 else v_117;
-  v_117 = 0.000000 fby dt;
-  pc_3 = if (r when St_Running(ck)) then 0.000000 else v_116;
-  v_116 = 0.000000 fby pc;
-  derivative_1 = if (r when St_Running(ck)) then 0.000000 else v_115;
-  v_115 = 0.000000 fby derivative;
-  integral_1 = if (r when St_Running(ck)) then 0.000000 else v_114;
-  v_114 = 0.000000 fby integral;
-  lastError_1 = if (r when St_Running(ck)) then 0.000000 else v_113;
-  v_113 = 0.000000 fby lastError;
-  error_1 = if (r when St_Running(ck)) then 0.000000 else v_112;
-  v_112 = 0.000000 fby error;
-  kd_2 = if (r when St_Running(ck)) then 0.000000 else v_111;
-  v_111 = 0.000000 fby kd;
-  ki_2 = if (r when St_Running(ck)) then 0.000000 else v_110;
-  v_110 = 0.000000 fby ki;
-  kp_4 = if (r when St_Running(ck)) then 0.000000 else v_109;
-  v_109 = 0.000000 fby kp;
+  nr_St_Action = if v_122 then true else v_128;
+  ns_St_Action = if v_122 then St_Turn else v_127;
+  v_128 = if v_123 then true else v_126;
+  v_127 = if v_123 then St_Running else v_125;
+  v_126 = if v_124 then true else false;
+  v_125 = if v_124 then St_Arrived else St_Action;
+  v_124 = (act = Globals.Stop);
+  v_123 = (act = Globals.Go);
+  v_122 = (act = Globals.Turn);
+  dt_3 = if (r when St_Running(ck)) then 0.000000 else v_121;
+  v_121 = 0.000000 fby dt;
+  pc_3 = if (r when St_Running(ck)) then 0.000000 else v_120;
+  v_120 = 0.000000 fby pc;
+  derivative_1 = if (r when St_Running(ck)) then 0.000000 else v_119;
+  v_119 = 0.000000 fby derivative;
+  integral_1 = if (r when St_Running(ck)) then 0.000000 else v_118;
+  v_118 = 0.000000 fby integral;
+  lastError_1 = if (r when St_Running(ck)) then 0.000000 else v_117;
+  v_117 = 0.000000 fby lastError;
+  error_1 = if (r when St_Running(ck)) then 0.000000 else v_116;
+  v_116 = 0.000000 fby error;
+  kd_2 = if (r when St_Running(ck)) then 0.000000 else v_115;
+  v_115 = 0.000000 fby kd;
+  ki_2 = if (r when St_Running(ck)) then 0.000000 else v_114;
+  v_114 = 0.000000 fby ki;
+  kp_4 = if (r when St_Running(ck)) then 0.000000 else v_113;
+  v_113 = 0.000000 fby kp;
   lastActionTime_St_Running = (lastActionTime_1 when St_Running(ck));
   actionIndex_St_Running = (actionIndex_1 when St_Running(ck));
   arriving_St_Running = false;
-  tLight = if v_108 then true else false;
-  v_108 = (v_107 >=. 1.000000);
-  v_107 =
+  isObstacle = if v_112 then true else false;
+  v_112 = ((sens when St_Running(ck)).Globals.s_sonar <= 10);
+  tLight = if v_111 then true else false;
+  v_111 = (v_110 >=. 1.000000);
+  v_110 =
     Utilities.compare_colors
     ((sens when St_Running(ck)).Globals.s_front, Globals.red);
-  actionMark = if v_106 then true else false;
-  v_106 = (v_103 & v_105);
-  v_105 = (v_104 >. 0.500000);
-  v_104 =
+  actionMark = if v_109 then true else false;
+  v_109 = (v_106 & v_108);
+  v_108 = (v_107 >. 0.500000);
+  v_107 =
     ((timez when St_Running(ck)) -. (lastActionTime when St_Running(ck)));
-  v_103 = (v_102 >=. 1.000000);
-  v_102 =
+  v_106 = (v_105 >=. 1.000000);
+  v_105 =
     Utilities.compare_colors
     ((sens when St_Running(ck)).Globals.s_road, Globals.green);
   rspeed_St_Running = setSpeed(turn, (tp when St_Running(ck)));
-  tp_St_Running = if v_99 then v_101 else (tp_2 when St_Running(ck));
-  v_101 = convertMsToDps(v_100.Globals.param);
-  v_100 = (iti when St_Running(ck))[>(actionIndex when St_Running(ck))<];
-  v_99 = (v_98.Globals.act = Globals.Go);
-  v_98 = (iti when St_Running(ck))[>(actionIndex when St_Running(ck))<];
+  tp_St_Running = if v_102 then v_104 else (tp_2 when St_Running(ck));
+  v_104 = convertMsToDps(v_103.Globals.param);
+  v_103 = (iti when St_Running(ck))[>(actionIndex when St_Running(ck))<];
+  v_102 = (v_101.Globals.act = Globals.Go);
+  v_101 = (iti when St_Running(ck))[>(actionIndex when St_Running(ck))<];
   () = Trace.trace_float("TIME", (timez when St_Running(ck))) every r_2;
   () = Trace.trace_float("ERROR", error) every r_1;
-  turn = (v_96 +. v_97);
-  v_97 = (kd *. derivative);
-  v_96 = (v_94 +. v_95);
-  v_95 = (ki *. integral);
-  v_94 = (kp *. error);
+  turn = (v_99 +. v_100);
+  v_100 = (kd *. derivative);
+  v_99 = (v_97 +. v_98);
+  v_98 = (ki *. integral);
+  v_97 = (kp *. error);
   () = Globals.dbg_sensors("SENSOR", (sens when St_Running(ck)));
   lastError = error_1;
-  derivative = if v_92 then v_93 else derivative_1;
-  v_93 = (error -. lastError);
-  v_92 = (v_91 >=. 1.000000);
-  v_91 =
+  derivative = if v_95 then v_96 else derivative_1;
+  v_96 = (error -. lastError);
+  v_95 = (v_94 >=. 1.000000);
+  v_94 =
     compare_colors((sens when St_Running(ck)).Globals.s_road, Globals.green);
-  integral = if v_88 then v_90 else integral_1;
-  v_90 = (v_89 +. error);
-  v_89 = ((2.000000 /. 3.000000) *. integral_1);
-  v_88 = (v_87 >=. 1.000000);
-  v_87 =
+  integral = if v_91 then v_93 else integral_1;
+  v_93 = (v_92 +. error);
+  v_92 = ((2.000000 /. 3.000000) *. integral_1);
+  v_91 = (v_90 >=. 1.000000);
+  v_90 =
     compare_colors((sens when St_Running(ck)).Globals.s_road, Globals.green);
-  error = if v_82 then v_86 else error_1;
-  v_86 = (mid *. v_85);
-  v_85 = Mathext.float(v_84);
-  v_84 = getDirection(left, mid, right, v_83);
-  v_83 =
+  error = if v_85 then v_89 else error_1;
+  v_89 = (mid *. v_88);
+  v_88 = Mathext.float(v_87);
+  v_87 = getDirection(left, mid, right, v_86);
+  v_86 =
     compare_colors((sens when St_Running(ck)).Globals.s_road, Globals.red);
-  v_82 = (v_81 >=. 1.000000);
-  v_81 =
+  v_85 = (v_84 >=. 1.000000);
+  v_84 =
     compare_colors((sens when St_Running(ck)).Globals.s_road, Globals.green);
   (left, mid, right) = getDistances((sens when St_Running(ck)));
   kd = calculateKd(kp, dt, pc);
@@ -344,12 +350,22 @@ let
   kp = calculateKp(0.700000);
   pc = 2.370000;
   dt = 0.016000;
-  nr_St_Running = if actionMark then true else v_80;
-  ns_St_Running = if actionMark then St_Action else v_79;
-  v_80 = if tLight then true else false;
-  v_79 = if tLight then St_TrafficLight else St_Running;
+  nr_St_Running = if actionMark then true else v_83;
+  ns_St_Running = if actionMark then St_Action else v_82;
+  v_83 = if tLight then true else v_81;
+  v_82 = if tLight then St_TrafficLight else v_80;
+  v_81 = if isObstacle then true else false;
+  v_80 = if isObstacle then St_Obstacle else St_Running;
   r_1 = (r when St_Running(ck));
   r_2 = (r when St_Running(ck));
+  tp_St_Obstacle = (tp_2 when St_Obstacle(ck));
+  lastActionTime_St_Obstacle = (lastActionTime_1 when St_Obstacle(ck));
+  actionIndex_St_Obstacle = (actionIndex_1 when St_Obstacle(ck));
+  arriving_St_Obstacle = false;
+  rspeed_St_Obstacle = Globals.idlew;
+  nr_St_Obstacle = if v_79 then true else false;
+  ns_St_Obstacle = if v_79 then St_Running else St_Obstacle;
+  v_79 = ((sens when St_Obstacle(ck)).Globals.s_sonar > 0);
   tp_St_Turn = (tp_2 when St_Turn(ck));
   lastActionTime_St_Turn = (lastActionTime_1 when St_Turn(ck));
   actionIndex_St_Turn = (actionIndex_1 when St_Turn(ck));
@@ -400,41 +416,45 @@ let
     merge ck
       (St_Arrived -> rspeed_St_Arrived)
       (St_TrafficLight -> rspeed_St_TrafficLight)(St_Turn -> rspeed_St_Turn)
-      (St_Running -> rspeed_St_Running)(St_Action -> rspeed_St_Action);
+      (St_Obstacle -> rspeed_St_Obstacle)(St_Running -> rspeed_St_Running)
+      (St_Action -> rspeed_St_Action);
   arriving =
     merge ck
       (St_Arrived -> arriving_St_Arrived)
       (St_TrafficLight -> arriving_St_TrafficLight)
-      (St_Turn -> arriving_St_Turn)(St_Running -> arriving_St_Running)
-      (St_Action -> arriving_St_Action);
+      (St_Turn -> arriving_St_Turn)(St_Obstacle -> arriving_St_Obstacle)
+      (St_Running -> arriving_St_Running)(St_Action -> arriving_St_Action);
   actionIndex =
     merge ck
       (St_Arrived -> actionIndex_St_Arrived)
       (St_TrafficLight -> actionIndex_St_TrafficLight)
-      (St_Turn -> actionIndex_St_Turn)(St_Running -> actionIndex_St_Running)
+      (St_Turn -> actionIndex_St_Turn)
+      (St_Obstacle -> actionIndex_St_Obstacle)
+      (St_Running -> actionIndex_St_Running)
       (St_Action -> actionIndex_St_Action);
   lastActionTime =
     merge ck
       (St_Arrived -> lastActionTime_St_Arrived)
       (St_TrafficLight -> lastActionTime_St_TrafficLight)
       (St_Turn -> lastActionTime_St_Turn)
+      (St_Obstacle -> lastActionTime_St_Obstacle)
       (St_Running -> lastActionTime_St_Running)
       (St_Action -> lastActionTime_St_Action);
   tp =
     merge ck
       (St_Arrived -> tp_St_Arrived)(St_TrafficLight -> tp_St_TrafficLight)
-      (St_Turn -> tp_St_Turn)(St_Running -> tp_St_Running)
-      (St_Action -> tp_St_Action);
+      (St_Turn -> tp_St_Turn)(St_Obstacle -> tp_St_Obstacle)
+      (St_Running -> tp_St_Running)(St_Action -> tp_St_Action);
   ns =
     merge ck
       (St_Arrived -> ns_St_Arrived)(St_TrafficLight -> ns_St_TrafficLight)
-      (St_Turn -> ns_St_Turn)(St_Running -> ns_St_Running)
-      (St_Action -> ns_St_Action);
+      (St_Turn -> ns_St_Turn)(St_Obstacle -> ns_St_Obstacle)
+      (St_Running -> ns_St_Running)(St_Action -> ns_St_Action);
   nr =
     merge ck
       (St_Arrived -> nr_St_Arrived)(St_TrafficLight -> nr_St_TrafficLight)
-      (St_Turn -> nr_St_Turn)(St_Running -> nr_St_Running)
-      (St_Action -> nr_St_Action);
+      (St_Turn -> nr_St_Turn)(St_Obstacle -> nr_St_Obstacle)
+      (St_Running -> nr_St_Running)(St_Action -> nr_St_Action);
   timez = (Globals.timestep *. v_59);
   v_59 = Mathext.float(compt);
   compt = (v_57 + v_58);

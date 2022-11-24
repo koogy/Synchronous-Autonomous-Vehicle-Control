@@ -1,5 +1,5 @@
-/* --- Generated the 24/11/2022 at 10:30 --- */
-/* --- heptagon compiler, version 1.05.00 (compiled tue. nov. 22 1:37:53 CET 2022) --- */
+/* --- Generated the 24/11/2022 at 17:41 --- */
+/* --- heptagon compiler, version 1.05.00 (compiled tue. nov. 22 1:0:13 CET 2022) --- */
 /* --- Command line: /home/alex/.opam/default/bin/heptc -c -target c control.ept --- */
 
 #ifndef CONTROL_TYPES_H
@@ -17,6 +17,7 @@ typedef enum {
   Control__St_Turn,
   Control__St_TrafficLight,
   Control__St_Running,
+  Control__St_Obstacle,
   Control__St_Arrived,
   Control__St_Action
 } Control__st;
