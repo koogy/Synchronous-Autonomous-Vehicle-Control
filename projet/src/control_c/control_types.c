@@ -1,4 +1,4 @@
-/* --- Generated the 24/11/2022 at 17:41 --- */
+/* --- Generated the 24/11/2022 at 18:8 --- */
 /* --- heptagon compiler, version 1.05.00 (compiled tue. nov. 22 1:0:13 CET 2022) --- */
 /* --- Command line: /home/alex/.opam/default/bin/heptc -c -target c control.ept --- */
 
@@ -14,11 +14,11 @@ Control__st Control__st_of_string(char* s) {
   if ((strcmp(s, "St_TrafficLight")==0)) {
     return Control__St_TrafficLight;
   };
-  if ((strcmp(s, "St_Running")==0)) {
-    return Control__St_Running;
-  };
   if ((strcmp(s, "St_Obstacle")==0)) {
     return Control__St_Obstacle;
+  };
+  if ((strcmp(s, "St_Go")==0)) {
+    return Control__St_Go;
   };
   if ((strcmp(s, "St_Arrived")==0)) {
     return Control__St_Arrived;
@@ -36,11 +36,11 @@ char* string_of_Control__st(Control__st x, char* buf) {
     case Control__St_TrafficLight:
       strcpy(buf, "St_TrafficLight");
       break;
-    case Control__St_Running:
-      strcpy(buf, "St_Running");
-      break;
     case Control__St_Obstacle:
       strcpy(buf, "St_Obstacle");
+      break;
+    case Control__St_Go:
+      strcpy(buf, "St_Go");
       break;
     case Control__St_Arrived:
       strcpy(buf, "St_Arrived");

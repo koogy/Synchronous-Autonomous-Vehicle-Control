@@ -1,4 +1,4 @@
-/* --- Generated the 24/11/2022 at 17:41 --- */
+/* --- Generated the 24/11/2022 at 18:8 --- */
 /* --- heptagon compiler, version 1.05.00 (compiled tue. nov. 22 1:0:13 CET 2022) --- */
 /* --- Command line: /home/alex/.opam/default/bin/heptc -c -target c control.ept --- */
 
@@ -381,9 +381,7 @@ void Control__controller_reset(Control__controller_mem* self) {
 void Control__controller_step(Globals__sensors sens, Globals__itielts iti,
                               Control__controller_out* _out,
                               Control__controller_mem* self) {
-  Control__calculateKi_out Control__calculateKi_out_st;
   Control__getDirection_out Control__getDirection_out_st;
-  Control__calculateKd_out Control__calculateKd_out_st;
   Trace__trace_float_out Trace__trace_float_out_st;
   Control__convertMsToDps_out Control__convertMsToDps_out_st;
   Control__calculateKp_out Control__calculateKp_out_st;
@@ -452,15 +450,15 @@ void Control__controller_step(Globals__sensors sens, Globals__itielts iti,
   Control__st v_80;
   int r_2;
   int r_1;
-  float dt_3;
-  float pc_3;
+  float dt_1;
+  float pc_1;
   float derivative_1;
   float integral_1;
   float lastError_1;
   float error_1;
-  float kd_2;
-  float ki_2;
-  float kp_4;
+  float kd_1;
+  float ki_1;
+  float kp_2;
   int actionMark;
   int tLight;
   int isObstacle;
@@ -514,13 +512,13 @@ void Control__controller_step(Globals__sensors sens, Globals__itielts iti,
   int actionIndex_St_Obstacle;
   int arriving_St_Obstacle;
   Globals__wheels rspeed_St_Obstacle;
-  int nr_St_Running;
-  Control__st ns_St_Running;
-  float tp_St_Running;
-  float lastActionTime_St_Running;
-  int actionIndex_St_Running;
-  int arriving_St_Running;
-  Globals__wheels rspeed_St_Running;
+  int nr_St_Go;
+  Control__st ns_St_Go;
+  float tp_St_Go;
+  float lastActionTime_St_Go;
+  int actionIndex_St_Go;
+  int arriving_St_Go;
+  Globals__wheels rspeed_St_Go;
   int nr_St_Action;
   Control__st ns_St_Action;
   float tp_St_Action;
@@ -570,7 +568,7 @@ void Control__controller_step(Globals__sensors sens, Globals__itielts iti,
       v_123 = (act==Globals__Go);
       if (v_123) {
         v_128 = true;
-        v_127 = Control__St_Running;
+        v_127 = Control__St_Go;
       } else {
         v_128 = v_126;
         v_127 = v_125;
@@ -590,31 +588,31 @@ void Control__controller_step(Globals__sensors sens, Globals__itielts iti,
       nr = nr_St_Action;
       _out->rspeed = rspeed_St_Action;
       break;
-    case Control__St_Running:
+    case Control__St_Go:
       if (r) {
-        dt_3 = 0.000000;
-        pc_3 = 0.000000;
+        dt_1 = 0.000000;
+        pc_1 = 0.000000;
         derivative_1 = 0.000000;
         integral_1 = 0.000000;
         lastError_1 = 0.000000;
         error_1 = 0.000000;
-        kd_2 = 0.000000;
-        ki_2 = 0.000000;
-        kp_4 = 0.000000;
+        kd_1 = 0.000000;
+        ki_1 = 0.000000;
+        kp_2 = 0.000000;
       } else {
-        dt_3 = self->v_121;
-        pc_3 = self->v_120;
+        dt_1 = self->v_121;
+        pc_1 = self->v_120;
         derivative_1 = self->v_119;
         integral_1 = self->v_118;
         lastError_1 = self->v_117;
         error_1 = self->v_116;
-        kd_2 = self->v_115;
-        ki_2 = self->v_114;
-        kp_4 = self->v_113;
+        kd_1 = self->v_115;
+        ki_1 = self->v_114;
+        kp_2 = self->v_113;
       };
-      lastActionTime_St_Running = self->lastActionTime_1;
-      actionIndex_St_Running = self->actionIndex_1;
-      arriving_St_Running = false;
+      lastActionTime_St_Go = self->lastActionTime_1;
+      actionIndex_St_Go = self->actionIndex_1;
+      arriving_St_Go = false;
       v_112 = (sens.s_sonar<=10);
       if (v_112) {
         isObstacle = true;
@@ -679,19 +677,17 @@ void Control__controller_step(Globals__sensors sens, Globals__itielts iti,
       } else {
         integral = integral_1;
       };
-      Control__calculateKp_step(0.700000, &Control__calculateKp_out_st);
+      kd = 0.000000;
+      v_100 = (kd*derivative);
+      ki = 0.000000;
+      v_98 = (ki*integral);
+      Control__calculateKp_step(1.000000, &Control__calculateKp_out_st);
       kp = Control__calculateKp_out_st.kp;
       v_97 = (kp*error);
-      pc = 2.370000;
-      dt = 0.016000;
-      Control__calculateKd_step(kp, dt, pc, &Control__calculateKd_out_st);
-      kd = Control__calculateKd_out_st.kd;
-      v_100 = (kd*derivative);
-      Control__calculateKi_step(kp, dt, pc, &Control__calculateKi_out_st);
-      ki = Control__calculateKi_out_st.ki;
-      v_98 = (ki*integral);
       v_99 = (v_97+v_98);
       turn = (v_99+v_100);
+      pc = 2.370000;
+      dt = 0.016000;
       if (isObstacle) {
         v_81 = true;
       } else {
@@ -705,7 +701,7 @@ void Control__controller_step(Globals__sensors sens, Globals__itielts iti,
       if (isObstacle) {
         v_80 = Control__St_Obstacle;
       } else {
-        v_80 = Control__St_Running;
+        v_80 = Control__St_Go;
       };
       if (tLight) {
         v_82 = Control__St_TrafficLight;
@@ -724,9 +720,9 @@ void Control__controller_step(Globals__sensors sens, Globals__itielts iti,
       };
       Trace__trace_float_step("TIME", timez, &Trace__trace_float_out_st,
                               &self->trace_float_1);
-      _out->arriving = arriving_St_Running;
-      actionIndex = actionIndex_St_Running;
-      lastActionTime = lastActionTime_St_Running;
+      _out->arriving = arriving_St_Go;
+      actionIndex = actionIndex_St_Go;
+      lastActionTime = lastActionTime_St_Go;
       v_107 = (timez-lastActionTime);
       v_108 = (v_107>0.500000);
       v_109 = (v_106&&v_108);
@@ -736,11 +732,11 @@ void Control__controller_step(Globals__sensors sens, Globals__itielts iti,
         actionMark = false;
       };
       if (actionMark) {
-        nr_St_Running = true;
-        ns_St_Running = Control__St_Action;
+        nr_St_Go = true;
+        ns_St_Go = Control__St_Action;
       } else {
-        nr_St_Running = v_83;
-        ns_St_Running = v_82;
+        nr_St_Go = v_83;
+        ns_St_Go = v_82;
       };
       v_103 = iti[between(actionIndex, Globals__itinum)];
       Control__convertMsToDps_step(v_103.param,
@@ -749,16 +745,16 @@ void Control__controller_step(Globals__sensors sens, Globals__itielts iti,
       v_101 = iti[between(actionIndex, Globals__itinum)];
       v_102 = (v_101.act==Globals__Go);
       if (v_102) {
-        tp_St_Running = v_104;
+        tp_St_Go = v_104;
       } else {
-        tp_St_Running = self->tp_2;
+        tp_St_Go = self->tp_2;
       };
-      tp = tp_St_Running;
+      tp = tp_St_Go;
       Control__setSpeed_step(turn, tp, &Control__setSpeed_out_st);
-      rspeed_St_Running = Control__setSpeed_out_st.rspeed;
-      ns = ns_St_Running;
-      nr = nr_St_Running;
-      _out->rspeed = rspeed_St_Running;
+      rspeed_St_Go = Control__setSpeed_out_st.rspeed;
+      ns = ns_St_Go;
+      nr = nr_St_Go;
+      _out->rspeed = rspeed_St_Go;
       self->v_121 = dt;
       self->v_120 = pc;
       self->v_119 = derivative;
@@ -777,7 +773,7 @@ void Control__controller_step(Globals__sensors sens, Globals__itielts iti,
       v_79 = (sens.s_sonar>0);
       if (v_79) {
         nr_St_Obstacle = true;
-        ns_St_Obstacle = Control__St_Running;
+        ns_St_Obstacle = Control__St_Go;
       } else {
         nr_St_Obstacle = false;
         ns_St_Obstacle = Control__St_Obstacle;
@@ -803,7 +799,7 @@ void Control__controller_step(Globals__sensors sens, Globals__itielts iti,
       v_61 = (v_60<1.000000);
       if (v_61) {
         nr_St_TrafficLight = true;
-        ns_St_TrafficLight = Control__St_Running;
+        ns_St_TrafficLight = Control__St_Go;
       } else {
         nr_St_TrafficLight = false;
         ns_St_TrafficLight = Control__St_TrafficLight;

@@ -52,7 +52,7 @@ test: $(TARGET)
 	./$< -o logs.txt assets/$(level).map
 
 trace: 
-	make && ./hept-plot ./scontest assets/06.map
+	make && ./hept-plot ./scontest assets/00.map
 
 $(TARGET): $(OBJ)
 	$(CC) $^ $(LDFLAGS) -o $@

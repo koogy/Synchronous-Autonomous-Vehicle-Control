@@ -149,10 +149,10 @@ let
        (*   () = dbg_action("ACTION", act); *)
      
       until (act = Turn) then Turn
-            | (act = Go) then Running
+            | (act = Go) then Go
             | (act = Stop) then Arrived 
           
-    state Running 
+    state Go 
       var actionMark,tLight,isObstacle: bool;
       left,mid,right,
       turn: float; 
@@ -172,9 +172,9 @@ let
            (* stable oscillation 1.71 sec  for 10ms*)
           (* 20 ms , kp value = 0.775 D*)
           (* 30 ms , kp value = 0.9*)
-          kp = calculateKp(0.7);
-          ki = calculateKi(kp,dt,pc) ;
-          kd = calculateKd(kp,dt,pc);
+          kp = calculateKp(1.0);
+          ki = 0.0 ;
+          kd = 0.0;
 
           (left,mid,right) = (getDistances(sens));
           error = if (compare_colors(sens.s_road,green) >=. 1.0) then mid *. Mathext.float(getDirection(left,mid,right, compare_colors(sens.s_road,red))) else last error;
@@ -210,7 +210,7 @@ let
     state Obstacle
         do rspeed= idlew;
           arriving = false;
-        until ( sens.s_sonar > 0 ) then Running
+        until ( sens.s_sonar > 0 ) then Go
 
     state Turn
       var cpt : int; time,speed: float;
@@ -226,7 +226,7 @@ let
     state TrafficLight
       do rspeed = idlew;
          arriving = false;
-      until (Utilities.compare_colors(sens.s_front, red) <. 1.0) then Running
+      until (Utilities.compare_colors(sens.s_front, red) <. 1.0) then Go
 
     state Arrived 
       do rspeed = idlew;
