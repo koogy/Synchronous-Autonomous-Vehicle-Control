@@ -1,5 +1,5 @@
-/* --- Generated the 24/11/2022 at 18:8 --- */
-/* --- heptagon compiler, version 1.05.00 (compiled tue. nov. 22 1:0:13 CET 2022) --- */
+/* --- Generated the 8/12/2022 at 10:48 --- */
+/* --- heptagon compiler, version 1.05.00 (compiled tue. nov. 22 1:37:53 CET 2022) --- */
 /* --- Command line: /home/alex/.opam/default/bin/heptc -c -target c control.ept --- */
 
 #ifndef CONTROL_H
@@ -122,18 +122,18 @@ void Control__calculateKd_step(float kp, float dt, float pc,
                                Control__calculateKd_out* _out);
 
 typedef struct Control__controller_mem {
-  int v_68;
+  int v_69;
+  float v_125;
+  float v_124;
+  float v_123;
+  float v_122;
   float v_121;
   float v_120;
   float v_119;
   float v_118;
   float v_117;
-  float v_116;
-  float v_115;
-  float v_114;
-  float v_113;
   Control__st ck;
-  int v_58;
+  int v_59;
   int pnr;
   float tp_2;
   float lastActionTime_1;
