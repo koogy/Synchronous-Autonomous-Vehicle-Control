@@ -1,6 +1,6 @@
-/* --- Generated the 8/12/2022 at 10:48 --- */
-/* --- heptagon compiler, version 1.05.00 (compiled tue. nov. 22 1:37:53 CET 2022) --- */
-/* --- Command line: /home/alex/.opam/default/bin/heptc -c -target c globals.ept --- */
+/* --- Generated the 17/12/2022 at 21:7 --- */
+/* --- heptagon compiler, version 1.05.00 (compiled thu. dec. 15 17:28:19 CET 2022) --- */
+/* --- Command line: /home/a/.opam/default/bin/heptc -c -target c globals.ept --- */
 
 #ifndef GLOBALS_H
 #define GLOBALS_H

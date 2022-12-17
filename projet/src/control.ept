@@ -178,6 +178,9 @@ let
           ki = calculateKi(kp,dt,pc) ;
           kd = calculateKd(kp,dt,pc);
 
+          () = dbg_float("KP", kp);
+          () = dbg_float("KI", ki);
+          () = dbg_float("KD", kd);
 
           (left,mid,right) = (getDistances(sens));
           error = if (compare_colors(sens.s_road,green) >=. 1.0) then mid *. Mathext.float(getDirection(left,mid,right, compare_colors(sens.s_road,red))) else last error;
@@ -192,12 +195,13 @@ let
                
           lastError = last error;
 
-          
+          () = Trace.trace_float("ERROR",error);
+          () = Trace.trace_float("DERIVATIVE",derivative);
+          () = Trace.trace_float("INTEGRAL",integral);
 
           turn = (kp *. error) +. (ki *. integral) +. (kd *. derivative);
 
-          () = Trace.trace_float("ERROR",error);
-          () = Trace.trace_float("TIME",timez);
+        
 
           tp =  if (((iti[>actionIndex<]).act)= Go) then  convertMsToDps((iti[>actionIndex<]).param) else last tp;
           rspeed = setSpeed(turn,tp);
