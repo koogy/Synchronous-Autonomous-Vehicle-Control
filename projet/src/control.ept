@@ -20,7 +20,7 @@ var circumference,arcLength : float;
 let
   circumference = pi *. cB ;
   arcLength = (abs(deg)/. 360.0) *. circumference; 
-  time = ((arcLength) /.(ms)) -. timestep; (* Substract by timestep to compensate *)
+  time = ((arcLength) /.(ms)) -. timestep; (* Substract by timestep to compensate for do ... until *)
 tel 
 
 (*  calculates the constants for the PID controller using the Ziegler–Nichols method  *)
