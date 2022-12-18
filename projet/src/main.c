@@ -42,8 +42,8 @@ int main(int argc, char **argv) {
       log_set_verbosity_level(LOG_DEBUG);
       break;
 
-    case 'g':
       show_guide = false;
+    case 'g':
       break;
 
     case 't':

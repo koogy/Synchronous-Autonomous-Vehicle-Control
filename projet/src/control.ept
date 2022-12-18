@@ -1,5 +1,6 @@
 open Globals
 open Utilities
+open Mathext
 
 
 const obstacleDistance : int = 70
@@ -27,14 +28,20 @@ let
   kd = (kp *. pc) /. (8.0 *. dt)
 tel
 
-fun isAction(c : color) returns ( res : bool)
+fun isActionMark(c : color) returns ( res : bool)
 let
    res = ((compare_colors(c,green)) = 1.0)
+tel
+
+fun isTrafficLightMark(c : color) returns ( res : bool)
+let
+   res = ((compare_colors(c,red)) = 1.0)
 tel
 
 node controller(sens : sensors; iti : itielts)
        returns (rspeed : wheels; arriving : bool)
 var compt : int; time: float; last actionIndex: int = -1; last lastActionTime: float = 0.0;  last tp: float = 0.0;
+
 let
 
   compt = (if true then 1 else 0) + (0 fby compt);
@@ -52,40 +59,46 @@ let
             | (act = Stop) then Arrived 
           
     state Go 
-      var onActionMark,onTrafficLight,isObstacle: bool;
+      var onTrafficLight,isObstacle: bool;
+      last onActionMark :bool  = false;
+      last outActionMark :bool  = false;
       turn,kp,ki,kd,lastError : float; 
 
       last error : float = 0.0;
       last integral : float = 0.0;
       last derivative : float = 0.0;
+      
+
       do  
           (* ~2.35s : periode d'oscillation calculé grace a Trace*)
           (kp,ki,kd) = calculateK(0.7,2.35);
 
           (* -- Si c'est une action alors on reprend la dernière valeur 
           sinon ça fausse le calcul du PID puisqu'on detecte une couleur différente *)
-          error = if isAction(sens.s_road) then last error
+          error = if isActionMark(sens.s_road) or (isTrafficLightMark(sens.s_road)) then last error
           else Mathext.float(sens.s_road.red - sens.s_road.green);
-         
-          integral = if isAction(sens.s_road) then last integral 
+    
+          integral = if isActionMark(sens.s_road) or (isTrafficLightMark(sens.s_road)) then last integral 
           else (2.0/.3.0)*.(last integral) +. error;
 
-          derivative = if isAction(sens.s_road) then last derivative
+          derivative = if isActionMark(sens.s_road) or (isTrafficLightMark(sens.s_road)) then last derivative
           else error -. lastError;
           (* -- *)
           lastError = last error;
 
           turn = (kp *. error) +. (ki *. integral) +. (kd *. derivative);
           tp =  convertMsToDps((iti[>actionIndex<]).param);
-          rspeed = { left = tp -. turn  ; right = tp +. turn };
 
-          (* 0.5 sec doit s'écouler avant de pouvoir realiser une nouvelle action sinon on restera bloqué pour le turn*)
-          onActionMark = (isAction(sens.s_road)) and ((time -. lastActionTime) >. 0.5);
+          rspeed = { left = floor(tp -. turn) ; right = floor( tp +. turn)};
+
+          onActionMark = isActionMark(sens.s_road);
+          outActionMark = ( last onActionMark ) and not onActionMark;
+
           onTrafficLight = (compare_colors(sens.s_front, red) >=. 1.0) or (compare_colors(sens.s_front, amber) >=. 1.0);
           isObstacle = (sens.s_sonar <= obstacleDistance);
           arriving = false;
 
-      until (onActionMark) then Action 
+      until (outActionMark) then Action 
           | onTrafficLight then TrafficLight
           | isObstacle then Obstacle
 

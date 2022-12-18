@@ -84,6 +84,7 @@ let
         exitRoad = exitRoad;
         collisionEvent = collisionEvent;
         dirEvent = wrong };
+
   itr = if exitRoad then Halt else Ok;
 tel
 
