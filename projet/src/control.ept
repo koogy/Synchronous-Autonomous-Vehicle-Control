@@ -7,9 +7,6 @@ const dt : float = 0.016 (* (16 ms/cycle) *)
 
 (* GO 30 -> speed excess  *)
 const cMAXSPEED_fix : float = 20.0
-(* Tourner exactement à un angle déclenche l'event wrong direction,
- soustraire/additioner cDegFix a l'angle désirer permet de résoudre le problème à 99% *)
-const cDEG_fix : float = 5.0
 
 (* converts to degrees per second *)
 fun convertMsToDps(ms : float) returns (dps : float)
@@ -19,12 +16,11 @@ tel
 
 (* calculate the time required for the robot to turn a certain number of degrees at a certain speed *)
 fun getTurnTime(deg, ms : float) returns (time : float)
-var circumference,arcLength, deg_fix: float;
+var circumference,arcLength : float;
 let
   circumference = pi *. cB ;
-  deg_fix = (if deg >. 0.0 then deg -. cDEG_fix else deg +. cDEG_fix);
-  arcLength = (abs(deg_fix)/. 360.0) *. circumference; 
-  time = (arcLength) /.(ms) ;
+  arcLength = (abs(deg)/. 360.0) *. circumference; 
+  time = ((arcLength) /.(ms)) ;
 tel 
 
 (*  calculates the constants for the PID controller using the Ziegler–Nichols method  *)
