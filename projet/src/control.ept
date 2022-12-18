@@ -20,7 +20,7 @@ var circumference,arcLength : float;
 let
   circumference = pi *. cB ;
   arcLength = (abs(deg)/. 360.0) *. circumference; 
-  time = ((arcLength) /.(ms)) ;
+  time = ((arcLength) /.(ms)) -. timestep ;
 tel 
 
 (*  calculates the constants for the PID controller using the Ziegler–Nichols method  *)
@@ -45,16 +45,12 @@ tel
 
 node controller(sens : sensors; iti : itielts)
        returns (rspeed : wheels; arriving : bool)
-var compt : int; time: float; last actionIndex: int = -1; last lastActionTime: float = 0.0;  last tp: float = 0.0;
-
+var last actionIndex: int = -1;
 let
-
-  compt = (if true then 1 else 0) + (0 fby compt);
-  time = timestep *. Mathext.float(compt);
   automaton
     state Action
       var act : action;
-      do lastActionTime = time;
+      do 
          rspeed= idlew;
          arriving = false;
          actionIndex =  (last actionIndex +1);
@@ -67,7 +63,7 @@ let
       var onTrafficLight,isObstacle: bool;
       last onActionMark :bool  = false;
       last outActionMark :bool  = false;
-      turn,kp,ki,kd,lastError : float; 
+      tp,turn,kp,ki,kd,lastError : float; 
 
       last error : float = 0.0;
       last integral : float = 0.0;
@@ -81,7 +77,7 @@ let
           sinon ça fausse le calcul du PID puisqu'on detecte une couleur différente du chemin à suivre*)
           error = if isActionMark(sens.s_road) or (isTrafficLightMark(sens.s_road)) then last error
           else Mathext.float(sens.s_road.red - sens.s_road.green);
-    
+             
           integral =  (2.0/.3.0)*.(last integral) +. error;
           derivative =  error -. lastError;
           lastError = last error;
@@ -91,7 +87,7 @@ let
           rspeed = { left = (tp -. turn) ; right = ( tp +. turn)};
           
           onActionMark = isActionMark(sens.s_road);
-          outActionMark = ( last onActionMark ) and not onActionMark;
+          outActionMark = (last onActionMark) and not onActionMark;
 
           onTrafficLight = (compare_colors(sens.s_front, red) >=. 1.0) or (compare_colors(sens.s_front, amber) >=. 1.0);
           isObstacle = (sens.s_sonar <= obstacleDistance);
@@ -110,7 +106,7 @@ let
          rspeed = if (iti[> actionIndex<]).param >. 0.0 then  
          {left = -. speed; right = speed } else {left = speed; right = -. speed};
          arriving = false;
-      until (turn_time >. getTurnTime((iti[>(actionIndex)<]).param,(iti[> actionIndex -1<]).param)) then Action
+      until (getTurnTime((iti[>(actionIndex)<]).param,(iti[> actionIndex -1<]).param) <. turn_time ) then Action
 
     state Obstacle
       do rspeed= idlew;
