@@ -2,24 +2,32 @@ open Globals
 open Utilities
 open Mathext
 
-const obstacleDistance : int = 40
+const obstacleDistance : int = 10
 const dt : float = 0.016 (* (16 ms/cycle) *)
 
+(* GO 30 -> speed excess  *)
+const cMAXSPEED_fix : float = 20.0
+(* Tourner exactement à un angle déclenche l'event wrong direction,
+ soustraire/additioner cDegFix a l'angle désirer permet de résoudre le problème à 99% *)
+const cDEG_fix : float = 5.0
+
+(* converts to degrees per second *)
 fun convertMsToDps(ms : float) returns (dps : float)
 let
-  dps = (60.0 /. (2.0 *. pi *. (cD/. 2.0))) *. (ms) *. 6.0
+  dps = floor((60.0 /. (2.0 *. pi *. (cD/. 2.0))) *. (min_float(ms,cMAXSPEED_fix)) *. 6.0)
 tel
 
 (* calculate the time required for the robot to turn a certain number of degrees at a certain speed *)
 fun getTurnTime(deg, ms : float) returns (time : float)
-var circumference : float;arcLength: float;
+var circumference,arcLength, deg_fix: float;
 let
   circumference = pi *. cB ;
-  arcLength = (abs(deg)/. 360.0) *. circumference; 
+  deg_fix = (if deg >. 0.0 then deg -. cDEG_fix else deg +. cDEG_fix);
+  arcLength = (abs(deg_fix)/. 360.0) *. circumference; 
   time = (arcLength) /.(ms) ;
 tel 
 
-(*  Ziegler–Nichols method  *)
+(*  calculates the constants for the PID controller using the Ziegler–Nichols method  *)
 fun calculateK(kc,pc: float) returns (kp,ki,kd : float)
 let
   kp = 0.6 *. kc;
@@ -27,6 +35,7 @@ let
   kd = (kp *. pc) /. (8.0 *. dt)
 tel
 
+(*  *)
 fun isActionMark(c : color) returns ( res : bool)
 let
    res = ((compare_colors(c,green)) = 1.0)
@@ -36,6 +45,7 @@ fun isTrafficLightMark(c : color) returns ( res : bool)
 let
    res = ((compare_colors(c,red)) = 1.0)
 tel
+(*  *)
 
 node controller(sens : sensors; iti : itielts)
        returns (rspeed : wheels; arriving : bool)
@@ -66,30 +76,24 @@ let
       last error : float = 0.0;
       last integral : float = 0.0;
       last derivative : float = 0.0;
-      
 
       do  
           (* ~2.35s : periode d'oscillation calculé grace a Trace*)
           (kp,ki,kd) = calculateK(0.7,2.35);
 
           (* -- Si c'est une action alors on reprend la dernière valeur 
-          sinon ça fausse le calcul du PID puisqu'on detecte une couleur différente *)
+          sinon ça fausse le calcul du PID puisqu'on detecte une couleur différente du chemin à suivre*)
           error = if isActionMark(sens.s_road) or (isTrafficLightMark(sens.s_road)) then last error
           else Mathext.float(sens.s_road.red - sens.s_road.green);
     
-          integral = if isActionMark(sens.s_road) or (isTrafficLightMark(sens.s_road)) then last integral 
-          else (2.0/.3.0)*.(last integral) +. error;
-
-          derivative = if isActionMark(sens.s_road) or (isTrafficLightMark(sens.s_road)) then last derivative
-          else error -. lastError;
-          (* -- *)
+          integral =  (2.0/.3.0)*.(last integral) +. error;
+          derivative =  error -. lastError;
           lastError = last error;
 
           turn = (kp *. error) +. (ki *. integral) +. (kd *. derivative);
           tp =  convertMsToDps((iti[>actionIndex<]).param);
-
-          rspeed = { left = floor(tp -. turn) ; right = floor( tp +. turn)};
-
+          rspeed = { left = (tp -. turn) ; right = ( tp +. turn)};
+          
           onActionMark = isActionMark(sens.s_road);
           outActionMark = ( last onActionMark ) and not onActionMark;
 
@@ -108,8 +112,7 @@ let
          speed = convertMsToDps((iti[> actionIndex-1<]).param);
          (* if angle is positive... turn anticlockwise else clockwise*)
          rspeed = if (iti[> actionIndex<]).param >. 0.0 then  
-         {left = -.(speed/. 1.05); right = speed } else 
-         {left = speed; right = -. (speed/. 1.05)};
+         {left = -. speed; right = speed } else {left = speed; right = -. speed};
          arriving = false;
       until (turn_time >. getTurnTime((iti[>(actionIndex)<]).param,(iti[> actionIndex -1<]).param)) then Action
 
