@@ -1,37 +1,16 @@
 open Globals
 open Utilities
 
-(* (16 ms/cycle) *)
+
 const obstacleDistance : int = 70
-const dt : float = 0.016
+const dt : float = 0.016 (* (16 ms/cycle) *)
 
-fun convertMsToDps(ms : float) returns (rpm : float)
+fun convertMsToDps(ms : float) returns (dps : float)
 let
-  rpm = (60.0 /. (2.0 *. pi *. (cD/. 2.0))) *. (ms) *. 6.0
+  dps = (60.0 /. (2.0 *. pi *. (cD/. 2.0))) *. (ms) *. 6.0
 tel
 
-fun power2(value1 : int) returns (v : int)
-let 
-  v = value1*value1;
-tel 
-
-(* Compare distance color  *)
-fun compare_colors(color1,color2 : color) returns (v : float)
-let
-  v = Mathext.sqrt(Mathext.float(power2(color1.red - color2.red)) +. Mathext.float(power2(color1.green - color2.green)) +. Mathext.float(power2(color1.blue - color2.blue)))
-tel
-
-(*  *)
-fun getDirection(left,mid,right, action : float) returns ( direction : int)
-var min :float;
-let
-  min = min_float(min_float(left,mid),min_float(action,right));
-  direction = if (min = left) then 1
-              else if (min = mid ) then 0
-              else if (min = right ) then -1
-              else 0;
-tel 
-
+(* calculate the time required for the robot to turn a certain number of degrees at a certain speed *)
 fun getTurnTime(deg, ms : float) returns (time : float)
 var circumference : float;arcLength: float;
 let
@@ -40,25 +19,17 @@ let
   time = (arcLength/.100.0) /.(ms/.100.0) ;
 tel 
 
+(*  Ziegler–Nichols method  *)
 fun calculateK(kc,pc: float) returns (kp,ki,kd : float)
 let
   kp = 0.6 *. kc;
-  ki =(2.0 *. kp *. dt)/. pc;
+  ki = (2.0 *. kp *. dt) /. pc;
   kd = (kp *. pc) /. (8.0 *. dt)
 tel
 
-(*  *)
-fun setSpeed(turn,tp: float) returns (rspeed: wheels)
-var left, right: float;
-let
-  left = max_float(min_float(tp +. turn, tp), -.tp) ;
-  right = max_float(min_float(tp -. turn, tp), -.tp) ;
-  rspeed = { left = left; right = right}
-tel 
-
 fun isAction(c : color) returns ( res : bool)
 let
-   res = ((Utilities.compare_colors(c,green)) = 1.0)
+   res = ((compare_colors(c,green)) = 1.0)
 tel
 
 node controller(sens : sensors; iti : itielts)
@@ -76,27 +47,25 @@ let
          arriving = false;
          actionIndex =  (last actionIndex +1);
          act = ((iti[>actionIndex<]).act);
-     
       until (act = Turn) then Turn
             | (act = Go) then Go
             | (act = Stop) then Arrived 
           
     state Go 
-      var actionMark,tLight,isObstacle: bool;
-      left,mid,right,
+      var onActionMark,onTrafficLight,isObstacle: bool;
       turn,kp,ki,kd,lastError : float; 
 
       last error : float = 0.0;
       last integral : float = 0.0;
       last derivative : float = 0.0;
       do  
-          (kp,ki,kd) = calculateK(0.7,2.36);
-          (left,mid,right) = (compare_colors(sens.s_road, cyan),compare_colors(sens.s_road, blue),compare_colors(sens.s_road, magenta));
-          
+          (* ~2.35s : periode d'oscillation calculé grace a Trace*)
+          (kp,ki,kd) = calculateK(0.7,2.35);
+
           (* -- Si c'est une action alors on reprend la dernière valeur 
           sinon ça fausse le calcul du PID puisqu'on detecte une couleur différente *)
           error = if isAction(sens.s_road) then last error
-          else mid *. Mathext.float(getDirection(left,mid,right, compare_colors(sens.s_road,red)));
+          else Mathext.float(sens.s_road.red - sens.s_road.green);
          
           integral = if isAction(sens.s_road) then last integral 
           else (2.0/.3.0)*.(last integral) +. error;
@@ -108,38 +77,39 @@ let
 
           turn = (kp *. error) +. (ki *. integral) +. (kd *. derivative);
           tp =  convertMsToDps((iti[>actionIndex<]).param);
-          rspeed = setSpeed(turn,tp);
+          rspeed = { left = tp -. turn  ; right = tp +. turn };
 
           (* 0.5 sec doit s'écouler avant de pouvoir realiser une nouvelle action sinon on restera bloqué pour le turn*)
-          actionMark = if (isAction(sens.s_road)) and ((time -. lastActionTime) >. 0.5) then true else false;
-          tLight = if (Utilities.compare_colors(sens.s_front, red) >=. 1.0) or (Utilities.compare_colors(sens.s_front, amber) >=. 1.0) then true else false;
-          isObstacle = if(sens.s_sonar <= obstacleDistance) then true else false;
+          onActionMark = (isAction(sens.s_road)) and ((time -. lastActionTime) >. 0.5);
+          onTrafficLight = (compare_colors(sens.s_front, red) >=. 1.0) or (compare_colors(sens.s_front, amber) >=. 1.0);
+          isObstacle = (sens.s_sonar <= obstacleDistance);
           arriving = false;
 
-      until (actionMark) then Action 
-          | tLight then TrafficLight
+      until (onActionMark) then Action 
+          | onTrafficLight then TrafficLight
           | isObstacle then Obstacle
-
-    state Obstacle
-        do rspeed= idlew;
-          arriving = false;
-        until ( sens.s_sonar > obstacleDistance ) then Go
 
     state Turn
       var cpt : int; turn_time,speed: float;
       do cpt = (if true then 1 else 0) + (0 fby cpt);
          turn_time = timestep *. Mathext.float(cpt);
-         speed = convertMsToDps((iti[> actionIndex -1<]).param);
-         rspeed = if (((iti[> actionIndex<]).param) >. 0.0) then  
+         speed = convertMsToDps((iti[> actionIndex-1<]).param);
+         (* if angle is positive... else .. *)
+         rspeed = if (iti[> actionIndex<]).param >. 0.0 then  
          {left = -. speed; right = (speed)} else 
          {left = speed; right = -. (speed)};
          arriving = false;
-      until (turn_time >. (getTurnTime((iti[>(actionIndex)<]).param,(iti[> actionIndex -1<]).param))) then Action
+      until (turn_time >. getTurnTime((iti[>(actionIndex)<]).param,(iti[> actionIndex -1<]).param)) then Action
+
+    state Obstacle
+      do rspeed= idlew;
+         arriving = false;
+      until (sens.s_sonar > obstacleDistance) then Go
 
     state TrafficLight
       do rspeed = idlew;
          arriving = false;
-      until (Utilities.compare_colors(sens.s_front, red) <> 1.0) and (Utilities.compare_colors(sens.s_front, amber) <> 1.0) then Go
+      until (compare_colors(sens.s_front, red) <> 1.0) and (compare_colors(sens.s_front, amber) <> 1.0) then Go
 
     state Arrived 
       do rspeed = idlew;
