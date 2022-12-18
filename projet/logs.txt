@@ -1,33 +1,24 @@
 [log] logging to logs.txt
-[map assets/09.map] read map: paris
-[map assets/09.map] read graphics: map_09_paris.bmp
-[map assets/09.map] read guide: b-09.bmp
-[map assets/09.map] read init: x = 40.000000, y = 275.000000, head = 0.000000
-[map assets/09.map] starting to read segment rd of size 31
-[map assets/09.map] finished reading segment rd
-[map assets/09.map] starting to read segment wp of size 32
-[map assets/09.map] finished reading segment wp
-[map assets/09.map] starting to read segment tl of size 6
-[map assets/09.map] finished reading segment tl
-[map assets/09.map] starting to read segment st of size 6
-[map assets/09.map] finished reading segment st
-[map assets/09.map] starting to read segment obst of size 0
-[map assets/09.map] finished reading segment obst
-[map assets/09.map] starting to read segment iti of size 14
-[map assets/09.map] finished reading segment iti
-[sdl] loaded texture b-09.bmp
+[map assets/01.map] read map: oneway_square
+[map assets/01.map] read graphics: map_01_oneway_square.bmp
+[map assets/01.map] read guide: b-01.bmp
+[map assets/01.map] read init: x = 550.000000, y = 200.000000, head = 90.000000
+[map assets/01.map] starting to read segment rd of size 4
+[map assets/01.map] finished reading segment rd
+[map assets/01.map] starting to read segment wp of size 5
+[map assets/01.map] finished reading segment wp
+[map assets/01.map] starting to read segment tl of size 0
+[map assets/01.map] finished reading segment tl
+[map assets/01.map] starting to read segment st of size 0
+[map assets/01.map] finished reading segment st
+[map assets/01.map] starting to read segment obst of size 2
+[map assets/01.map] finished reading segment obst
+[map assets/01.map] starting to read segment iti of size 8
+[map assets/01.map] finished reading segment iti
+[sdl] loaded texture b-01.bmp
 [sdl] loaded texture orange.bmp
 [sdl] loaded texture obst.bmp
 [simulation] starting (16 ms/cycle)
-[sdl] no audio device
-[audio] car goes in the wrong direction
-[sdl] no audio device
-[audio] car goes in the wrong direction
-[sdl] no audio device
-[audio] car goes in the wrong direction
-[sdl] no audio device
-[audio] car goes in the wrong direction
-[simulation 00005543] race finished
-[simulation 00005543] shutting down, score = 52920, time = 49.919998
-[simulation] race succeeded
+[simulation 00000593] shutting down, score = 15190, time = 5.190000
+[simulation] race quit before finishing
 [log] shutting down, closing logs.txt

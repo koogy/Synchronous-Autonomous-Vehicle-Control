@@ -1,4 +1,4 @@
-/* --- Generated the 18/12/2022 at 7:1 --- */
+/* --- Generated the 18/12/2022 at 7:24 --- */
 /* --- heptagon compiler, version 1.05.00 (compiled thu. dec. 15 17:28:19 CET 2022) --- */
 /* --- Command line: /home/a/.opam/default/bin/heptc -c -target c control.ept --- */
 
@@ -71,11 +71,11 @@ void Control__isTrafficLightMark_step(Globals__color c,
 }
 
 void Control__controller_reset(Control__controller_mem* self) {
+  self->v_71 = 0.000000;
+  self->v_70 = 0.000000;
   self->v_69 = 0.000000;
-  self->v_68 = 0.000000;
-  self->v_67 = 0.000000;
-  self->v_66 = false;
-  self->v_65 = false;
+  self->v_68 = false;
+  self->v_67 = false;
   self->v_22 = 0;
   self->tp_1 = 0.000000;
   self->lastActionTime_1 = 0.000000;
@@ -105,9 +105,11 @@ void Control__controller_step(Globals__sensors sens, Globals__itielts iti,
   int v_9;
   float v_8;
   int v_15;
-  Globals__wheels v_32;
-  float v_31;
-  Globals__wheels v_30;
+  Globals__wheels v_34;
+  float v_33;
+  float v_32;
+  Globals__wheels v_31;
+  float v_30;
   float v_29;
   int v_28;
   Globals__itielt v_27;
@@ -124,38 +126,38 @@ void Control__controller_step(Globals__sensors sens, Globals__itielts iti,
   int cpt;
   float turn_time;
   float speed;
+  int v_66;
+  float v_65;
   int v_64;
   float v_63;
   int v_62;
   float v_61;
-  int v_60;
+  float v_60;
   float v_59;
   float v_58;
-  float v_57;
+  Globals__itielt v_57;
   float v_56;
-  Globals__itielt v_55;
+  float v_55;
   float v_54;
   float v_53;
   float v_52;
-  float v_51;
-  float v_50;
+  int v_51;
+  int v_50;
   int v_49;
-  int v_48;
-  int v_47;
-  float v_46;
-  float v_45;
+  float v_48;
+  float v_47;
+  int v_46;
+  int v_45;
   int v_44;
-  int v_43;
+  float v_43;
   int v_42;
-  float v_41;
+  int v_41;
   int v_40;
   int v_39;
   int v_38;
-  int v_37;
+  Control__st v_37;
   int v_36;
   Control__st v_35;
-  int v_34;
-  Control__st v_33;
   float derivative_1;
   float integral_1;
   float error_1;
@@ -173,14 +175,14 @@ void Control__controller_step(Globals__sensors sens, Globals__itielts iti,
   float error;
   float integral;
   float derivative;
-  Globals__itielt v_77;
+  Globals__itielt v_79;
+  int v_78;
+  Control__st v_77;
   int v_76;
   Control__st v_75;
   int v_74;
-  Control__st v_73;
+  int v_73;
   int v_72;
-  int v_71;
-  int v_70;
   Globals__action act;
   int nr_St_Arrived;
   Control__st ns_St_Arrived;
@@ -253,31 +255,31 @@ void Control__controller_step(Globals__sensors sens, Globals__itielts iti,
       _out->arriving = arriving_St_Action;
       actionIndex = actionIndex_St_Action;
       lastActionTime = lastActionTime_St_Action;
-      v_77 = iti[between(actionIndex, Globals__itinum)];
-      act = v_77.act;
-      v_72 = (act==Globals__Stop);
-      if (v_72) {
-        v_74 = true;
-        v_73 = Control__St_Arrived;
-      } else {
-        v_74 = false;
-        v_73 = Control__St_Action;
-      };
-      v_71 = (act==Globals__Go);
-      if (v_71) {
+      v_79 = iti[between(actionIndex, Globals__itinum)];
+      act = v_79.act;
+      v_74 = (act==Globals__Stop);
+      if (v_74) {
         v_76 = true;
-        v_75 = Control__St_Go;
+        v_75 = Control__St_Arrived;
       } else {
-        v_76 = v_74;
-        v_75 = v_73;
+        v_76 = false;
+        v_75 = Control__St_Action;
       };
-      v_70 = (act==Globals__Turn);
-      if (v_70) {
+      v_73 = (act==Globals__Go);
+      if (v_73) {
+        v_78 = true;
+        v_77 = Control__St_Go;
+      } else {
+        v_78 = v_76;
+        v_77 = v_75;
+      };
+      v_72 = (act==Globals__Turn);
+      if (v_72) {
         nr_St_Action = true;
         ns_St_Action = Control__St_Turn;
       } else {
-        nr_St_Action = v_76;
-        ns_St_Action = v_75;
+        nr_St_Action = v_78;
+        ns_St_Action = v_77;
       };
       rspeed_St_Action.right = 0.000000;
       rspeed_St_Action.left = 0.000000;
@@ -294,11 +296,11 @@ void Control__controller_step(Globals__sensors sens, Globals__itielts iti,
         outActionMark_1 = false;
         onActionMark_1 = false;
       } else {
-        derivative_1 = self->v_69;
-        integral_1 = self->v_68;
-        error_1 = self->v_67;
-        outActionMark_1 = self->v_66;
-        onActionMark_1 = self->v_65;
+        derivative_1 = self->v_71;
+        integral_1 = self->v_70;
+        error_1 = self->v_69;
+        outActionMark_1 = self->v_68;
+        onActionMark_1 = self->v_67;
       };
       lastActionTime_St_Go = self->lastActionTime_1;
       actionIndex_St_Go = self->actionIndex_1;
@@ -306,121 +308,121 @@ void Control__controller_step(Globals__sensors sens, Globals__itielts iti,
       isObstacle = (sens.s_sonar<=Control__obstacleDistance);
       Utilities__compare_colors_step(sens.s_front, Globals__amber,
                                      &Utilities__compare_colors_out_st);
-      v_63 = Utilities__compare_colors_out_st.correlation;
-      v_64 = (v_63>=1.000000);
+      v_65 = Utilities__compare_colors_out_st.correlation;
+      v_66 = (v_65>=1.000000);
       Utilities__compare_colors_step(sens.s_front, Globals__red,
                                      &Utilities__compare_colors_out_st);
-      v_61 = Utilities__compare_colors_out_st.correlation;
-      v_62 = (v_61>=1.000000);
-      onTrafficLight = (v_62||v_64);
+      v_63 = Utilities__compare_colors_out_st.correlation;
+      v_64 = (v_63>=1.000000);
+      onTrafficLight = (v_64||v_66);
       Control__isActionMark_step(sens.s_road, &Control__isActionMark_out_st);
       onActionMark = Control__isActionMark_out_st.res;
-      v_60 = !(onActionMark);
-      outActionMark = (onActionMark_1&&v_60);
+      v_62 = !(onActionMark);
+      outActionMark = (onActionMark_1&&v_62);
       lastError = error_1;
       Control__isTrafficLightMark_step(sens.s_road,
                                        &Control__isTrafficLightMark_out_st);
-      v_48 = Control__isTrafficLightMark_out_st.res;
+      v_50 = Control__isTrafficLightMark_out_st.res;
       Control__isActionMark_step(sens.s_road, &Control__isActionMark_out_st);
-      v_47 = Control__isActionMark_out_st.res;
-      v_49 = (v_47||v_48);
-      v_45 = (0.666667*integral_1);
+      v_49 = Control__isActionMark_out_st.res;
+      v_51 = (v_49||v_50);
+      v_47 = (0.666667*integral_1);
       Control__isTrafficLightMark_step(sens.s_road,
                                        &Control__isTrafficLightMark_out_st);
-      v_43 = Control__isTrafficLightMark_out_st.res;
+      v_45 = Control__isTrafficLightMark_out_st.res;
       Control__isActionMark_step(sens.s_road, &Control__isActionMark_out_st);
-      v_42 = Control__isActionMark_out_st.res;
-      v_44 = (v_42||v_43);
-      v_40 = (sens.s_road.red-sens.s_road.green);
-      Mathext__float_step(v_40, &Mathext__float_out_st);
-      v_41 = Mathext__float_out_st.o;
+      v_44 = Control__isActionMark_out_st.res;
+      v_46 = (v_44||v_45);
+      v_42 = (sens.s_road.red-sens.s_road.green);
+      Mathext__float_step(v_42, &Mathext__float_out_st);
+      v_43 = Mathext__float_out_st.o;
       Control__isTrafficLightMark_step(sens.s_road,
                                        &Control__isTrafficLightMark_out_st);
-      v_38 = Control__isTrafficLightMark_out_st.res;
+      v_40 = Control__isTrafficLightMark_out_st.res;
       Control__isActionMark_step(sens.s_road, &Control__isActionMark_out_st);
-      v_37 = Control__isActionMark_out_st.res;
-      v_39 = (v_37||v_38);
-      if (v_39) {
+      v_39 = Control__isActionMark_out_st.res;
+      v_41 = (v_39||v_40);
+      if (v_41) {
         error = error_1;
       } else {
-        error = v_41;
+        error = v_43;
       };
-      v_50 = (error-lastError);
-      if (v_49) {
+      v_52 = (error-lastError);
+      if (v_51) {
         derivative = derivative_1;
       } else {
-        derivative = v_50;
+        derivative = v_52;
       };
-      v_46 = (v_45+error);
-      if (v_44) {
+      v_48 = (v_47+error);
+      if (v_46) {
         integral = integral_1;
       } else {
-        integral = v_46;
+        integral = v_48;
       };
       Control__calculateK_step(0.700000, 2.350000,
                                &Control__calculateK_out_st);
       kp = Control__calculateK_out_st.kp;
       ki = Control__calculateK_out_st.ki;
       kd = Control__calculateK_out_st.kd;
-      v_54 = (kd*derivative);
-      v_52 = (ki*integral);
-      v_51 = (kp*error);
-      v_53 = (v_51+v_52);
-      turn = (v_53+v_54);
+      v_56 = (kd*derivative);
+      v_54 = (ki*integral);
+      v_53 = (kp*error);
+      v_55 = (v_53+v_54);
+      turn = (v_55+v_56);
       if (isObstacle) {
-        v_34 = true;
-      } else {
-        v_34 = false;
-      };
-      if (onTrafficLight) {
         v_36 = true;
       } else {
-        v_36 = v_34;
+        v_36 = false;
+      };
+      if (onTrafficLight) {
+        v_38 = true;
+      } else {
+        v_38 = v_36;
       };
       if (outActionMark) {
         nr_St_Go = true;
       } else {
-        nr_St_Go = v_36;
+        nr_St_Go = v_38;
       };
       if (isObstacle) {
-        v_33 = Control__St_Obstacle;
+        v_35 = Control__St_Obstacle;
       } else {
-        v_33 = Control__St_Go;
+        v_35 = Control__St_Go;
       };
       if (onTrafficLight) {
-        v_35 = Control__St_TrafficLight;
+        v_37 = Control__St_TrafficLight;
       } else {
-        v_35 = v_33;
+        v_37 = v_35;
       };
       if (outActionMark) {
         ns_St_Go = Control__St_Action;
       } else {
-        ns_St_Go = v_35;
+        ns_St_Go = v_37;
       };
       _out->arriving = arriving_St_Go;
       actionIndex = actionIndex_St_Go;
       lastActionTime = lastActionTime_St_Go;
-      v_55 = iti[between(actionIndex, Globals__itinum)];
-      Control__convertMsToDps_step(v_55.param,
+      v_57 = iti[between(actionIndex, Globals__itinum)];
+      Control__convertMsToDps_step(v_57.param,
                                    &Control__convertMsToDps_out_st);
       tp_St_Go = Control__convertMsToDps_out_st.dps;
       tp = tp_St_Go;
-      v_58 = (tp+turn);
+      v_60 = (tp+turn);
+      Mathext__floor_step(v_60, &Mathext__floor_out_st);
+      v_61 = Mathext__floor_out_st.o;
+      v_58 = (tp-turn);
       Mathext__floor_step(v_58, &Mathext__floor_out_st);
       v_59 = Mathext__floor_out_st.o;
-      v_56 = (tp-turn);
-      Mathext__floor_step(v_56, &Mathext__floor_out_st);
-      v_57 = Mathext__floor_out_st.o;
-      rspeed_St_Go.left = v_57;
-      rspeed_St_Go.right = v_59;
+      rspeed_St_Go.left = v_59;
+      rspeed_St_Go.right = v_61;
       ns = ns_St_Go;
       nr = nr_St_Go;
       _out->rspeed = rspeed_St_Go;
-      self->v_69 = derivative;
-      self->v_68 = integral;
-      self->v_67 = error;
-      self->v_66 = outActionMark;
-      self->v_65 = onActionMark;
+      self->v_71 = derivative;
+      self->v_70 = integral;
+      self->v_69 = error;
+      self->v_68 = outActionMark;
+      self->v_67 = onActionMark;
       break;
     case Control__St_Turn:
       tp_St_Turn = self->tp_1;
@@ -453,16 +455,18 @@ void Control__controller_step(Globals__sensors sens, Globals__itielts iti,
       Control__convertMsToDps_step(v_26.param,
                                    &Control__convertMsToDps_out_st);
       speed = Control__convertMsToDps_out_st.dps;
-      v_31 = -(speed);
-      v_29 = -(speed);
-      v_32.left = speed;
-      v_32.right = v_31;
-      v_30.left = v_29;
-      v_30.right = speed;
+      v_32 = (speed/1.050000);
+      v_33 = -(v_32);
+      v_29 = (speed/1.050000);
+      v_30 = -(v_29);
+      v_34.left = speed;
+      v_34.right = v_33;
+      v_31.left = v_30;
+      v_31.right = speed;
       if (v_28) {
-        rspeed_St_Turn = v_30;
+        rspeed_St_Turn = v_31;
       } else {
-        rspeed_St_Turn = v_32;
+        rspeed_St_Turn = v_34;
       };
       v_18 = iti[between(v_17, Globals__itinum)];
       v_16 = iti[between(actionIndex, Globals__itinum)];
