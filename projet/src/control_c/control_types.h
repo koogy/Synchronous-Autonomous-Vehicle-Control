@@ -1,4 +1,4 @@
-/* --- Generated the 18/12/2022 at 7:24 --- */
+/* --- Generated the 18/12/2022 at 18:27 --- */
 /* --- heptagon compiler, version 1.05.00 (compiled thu. dec. 15 17:28:19 CET 2022) --- */
 /* --- Command line: /home/a/.opam/default/bin/heptc -c -target c control.ept --- */
 
@@ -24,8 +24,10 @@ Control__st Control__st_of_string(char* s);
 
 char* string_of_Control__st(Control__st x, char* buf);
 
-static const int Control__obstacleDistance = 70;
+static const int Control__obstacleDistance = 10;
 
 static const float Control__dt = 0.016000;
+
+static const float Control__cMAXSPEED_fix = 20.000000;
 
 #endif // CONTROL_TYPES_H

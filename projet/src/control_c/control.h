@@ -1,4 +1,4 @@
-/* --- Generated the 18/12/2022 at 7:24 --- */
+/* --- Generated the 18/12/2022 at 18:27 --- */
 /* --- heptagon compiler, version 1.05.00 (compiled thu. dec. 15 17:28:19 CET 2022) --- */
 /* --- Command line: /home/a/.opam/default/bin/heptc -c -target c control.ept --- */
 
@@ -46,17 +46,14 @@ void Control__isTrafficLightMark_step(Globals__color c,
                                       Control__isTrafficLightMark_out* _out);
 
 typedef struct Control__controller_mem {
-  int v_22;
-  float v_71;
-  float v_70;
-  float v_69;
-  int v_68;
-  int v_67;
+  int v_19;
+  float v_56;
+  float v_55;
+  float v_54;
+  int v_53;
+  int v_52;
   Control__st ck;
-  int v_6;
   int pnr;
-  float tp_1;
-  float lastActionTime_1;
   int actionIndex_1;
 } Control__controller_mem;
 

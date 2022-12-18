@@ -20,15 +20,15 @@ var circumference,arcLength : float;
 let
   circumference = pi *. cB ;
   arcLength = (abs(deg)/. 360.0) *. circumference; 
-  time = ((arcLength) /.(ms)) -. timestep ;
+  time = ((arcLength) /.(ms)) -. timestep; (* Substract by timestep to compensate *)
 tel 
 
 (*  calculates the constants for the PID controller using the Ziegler–Nichols method  *)
 fun calculateK(kc,pc: float) returns (kp,ki,kd : float)
 let
   kp = 0.6 *. kc;
-  ki = (2.0 *. kp *. dt) /. pc;
-  kd = (kp *. pc) /. (8.0 *. dt)
+  ki = 2.0 *. kp *. dt /. pc;
+  kd = kp *. pc /. (8.0 *. dt)
 tel
 
 (*  *)
@@ -41,7 +41,6 @@ fun isTrafficLightMark(c : color) returns ( res : bool)
 let
    res = ((compare_colors(c,red)) = 1.0)
 tel
-(*  *)
 
 node controller(sens : sensors; iti : itielts)
        returns (rspeed : wheels; arriving : bool)
@@ -99,14 +98,14 @@ let
 
     state Turn
       var cpt : int; turn_time,speed: float;
-      do cpt = (if true then 1 else 0) + (0 fby cpt);
-         turn_time = timestep *. Mathext.float(cpt);
+      do cpt = 1  + (0 fby cpt);
+         turn_time =  (timestep *. Mathext.float(cpt));
          speed = convertMsToDps((iti[> actionIndex-1<]).param);
          (* if angle is positive... turn anticlockwise else clockwise*)
          rspeed = if (iti[> actionIndex<]).param >. 0.0 then  
          {left = -. speed; right = speed } else {left = speed; right = -. speed};
          arriving = false;
-      until (getTurnTime((iti[>(actionIndex)<]).param,(iti[> actionIndex -1<]).param) <. turn_time ) then Action
+      until (getTurnTime((iti[>(actionIndex)<]).param,(iti[> actionIndex -1<]).param)  <. turn_time ) then Action
 
     state Obstacle
       do rspeed= idlew;
