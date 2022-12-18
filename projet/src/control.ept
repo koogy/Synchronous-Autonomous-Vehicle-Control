@@ -114,7 +114,6 @@ let
           actionMark = if (isAction(sens.s_road)) and ((time -. lastActionTime) >. 0.5) then true else false;
           tLight = if (Utilities.compare_colors(sens.s_front, red) >=. 1.0) or (Utilities.compare_colors(sens.s_front, amber) >=. 1.0) then true else false;
           isObstacle = if(sens.s_sonar <= obstacleDistance) then true else false;
-          () = dbg_float("TIME 1 ", time);
           arriving = false;
 
       until (actionMark) then Action 
